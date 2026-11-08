@@ -1,0 +1,18 @@
+\begin{tabular}{llrrrrr}
+\toprule
+Dataset & Model & Fixed & Nested, cell inner & Nested, group inner & Selected on reported folds & Optimism \\
+\midrule
+MATR (batch) & Ridge & 4.40 & 4.44 & 4.54 & 4.40 & 1\% \\
+ & LightGBM & 5.80 & 5.47 & 5.42 & 5.42 & 1\% \\
+ & XGBoost & 5.80 & 5.51 & 5.40 & 5.41 & 2\% \\
+ & RandomForest & 6.43 & 6.18 & 6.30 & 5.88 & 5\% \\
+HUST & Ridge & 0.21 & 0.21 & 0.21 & 0.21 & 0\% \\
+ & LightGBM & 0.29 & 0.27 & 0.27 & 0.27 & 2\% \\
+ & XGBoost & 0.31 & 0.33 & 0.35 & 0.32 & 5\% \\
+ & RandomForest & 0.38 & 0.35 & 0.35 & 0.35 & 0\% \\
+XJTU & Ridge & 7.39 & 7.29 & 5.62 & 4.73 & 35\% \\
+ & LightGBM & 2.92 & 3.32 & 3.43 & 2.59 & 22\% \\
+ & XGBoost & 4.37 & 4.68 & 2.48 & 2.44 & 48\% \\
+ & RandomForest & 2.48 & 2.49 & 2.30 & 2.25 & 10\% \\
+\bottomrule
+\end{tabular}

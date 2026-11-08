@@ -1,0 +1,5 @@
+protocol,top1_Ridge,top1_LightGBM,top1_XGBoost
+P0,0.0,0.76,0.24
+P2,0.0,0.677,0.323
+P3a,1.0,0.0,0.0
+P3b,0.0,1.0,0.0

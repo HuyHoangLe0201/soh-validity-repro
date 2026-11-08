@@ -1,0 +1,8 @@
+{
+  "P0_shuffled5 vs P0b_block5": 0.2,
+  "P0_shuffled5 vs P1_forward": 0.867,
+  "P0_shuffled5 vs P2_LOBO": 0.733,
+  "P0b_block5 vs P1_forward": 0.333,
+  "P0b_block5 vs P2_LOBO": 0.2,
+  "P1_forward vs P2_LOBO": 0.6
+}

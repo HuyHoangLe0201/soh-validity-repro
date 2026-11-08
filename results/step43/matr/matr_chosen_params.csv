@@ -1,0 +1,17 @@
+key,alpha,max_depth,n_estimators,learning_rate
+SOH_rated|tuned|P2|Ridge|0,1000,,,
+SOH_rated|tuned|P2|Ridge|0,1000,,,
+SOH_rated|tuned|P2|Ridge|0,1000,,,
+SOH_rated|tuned|P2|Ridge|0,1000,,,
+SOH_rated|tuned|P2|Ridge|0,1000,,,
+SOH_rated|tuned|P2|LightGBM|0,,6,300,0.1
+SOH_rated|tuned|P2|LightGBM|0,,6,300,0.1
+SOH_rated|tuned|P2|LightGBM|0,,6,300,0.1
+SOH_rated|tuned|P2|LightGBM|0,,6,300,0.1
+SOH_rated|tuned|P2|LightGBM|0,,6,300,0.1
+SOH_rated|tuned|P3|Ridge|0,1000,,,
+SOH_rated|tuned|P3|Ridge|0,1000,,,
+SOH_rated|tuned|P3|Ridge|0,1000,,,
+SOH_rated|tuned|P3|LightGBM|0,,6,300,0.1
+SOH_rated|tuned|P3|LightGBM|0,,6,300,0.1
+SOH_rated|tuned|P3|LightGBM|0,,6,300,0.1

@@ -1,0 +1,985 @@
+\documentclass{ieeeaccess}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{bm}
+\usepackage{url}
+% the IEEE Access class redefines \year, which pgf's random-number seed needs as a number
+\let\ieeeyearsaved\year\mathchardef\year=2026
+\usepackage{tikz}
+\let\year\ieeeyearsaved
+% loading pgf breaks the PANTONE spot colour of the class (title and headings vanish): use an RGB equivalent for the class colour accessblue
+\definecolor{accessblue}{RGB}{0,93,148}
+\usetikzlibrary{arrows.meta,calc,shadings}
+\definecolor{cNavy}{HTML}{1F3A5F}\definecolor{cInt}{HTML}{D9782B}\definecolor{cCon}{HTML}{3F8F5F}\definecolor{cExt}{HTML}{2F66A8}
+\definecolor{cTr}{HTML}{3B6EA5}\definecolor{cTe}{HTML}{E08A3C}\definecolor{cTab}{HTML}{DCEBDF}\definecolor{cNet}{HTML}{E6DEF2}\definecolor{cIn}{HTML}{E4E6F4}\definecolor{cFe}{HTML}{FBEBD6}\definecolor{cVal}{HTML}{9DB9D9}\definecolor{cBad}{HTML}{C0392B}
+% one thumbnail row: \trow{x}{y}{cell width}{values}  (1 training, 2 test)
+\newcommand{\trow}[4]{\foreach \v [count=\c from 0] in {#4}{%
+  \ifnum\v=2 \fill[cTe] ({#1+\c*#3},#2) rectangle +({#3-0.014},-0.135);\else \fill[cTr] ({#1+\c*#3},#2) rectangle +({#3-0.014},-0.135);\fi}}
+\newcommand{\thumb}[5]{\trow{#1}{#2}{0.19}{#3}\trow{#1}{#2-0.143}{0.19}{#4}\trow{#1}{#2-0.286}{0.19}{#5}}
+% charge profile sketch
+\newcommand{\curve}[2]{\draw[black!65,line width=0.6pt] ({#1},{#2}) .. controls ({#1+0.15},{#2+0.25}) and ({#1+0.3},{#2+0.3}) .. ({#1+0.55},{#2+0.34}) .. controls ({#1+0.85},{#2+0.38}) and ({#1+1.0},{#2+0.42}) .. ({#1+1.2},{#2+0.5});}
+% white header icons (about 0.3 cm)
+\newcommand{\icoData}[2]{\draw[white,line width=0.55pt] ({#1},{#2}) ellipse (0.15 and 0.05) ({#1-0.15},{#2}) -- ({#1-0.15},{#2-0.2}) arc (180:360:0.15 and 0.05) -- ({#1+0.15},{#2}); \draw[white,line width=0.55pt] ({#1-0.15},{#2-0.1}) arc (180:360:0.15 and 0.05);}
+\newcommand{\icoSplit}[2]{\foreach \dx/\dy/\cc in {-0.15/0/white,0.02/0/white,-0.15/-0.15/white,0.02/-0.15/cTe}{\fill[\cc] ({#1+\dx},{#2+\dy}) rectangle +(0.13,-0.13);}}
+\newcommand{\icoIn}[2]{\draw[white!80,line width=0.6pt] ({#1-0.16},{#2-0.25}) -- ({#1-0.16},{#2}) ({#1-0.16},{#2-0.25}) -- ({#1+0.16},{#2-0.25}); \draw[cTe!90!white,line width=0.9pt] ({#1-0.12},{#2-0.2}) .. controls ({#1-0.05},{#2-0.06}) .. ({#1+0.15},{#2-0.04});}
+\newcommand{\icoTune}[2]{\foreach \yy/\kx in {0/-0.06,-0.09/0.07,-0.18/-0.02}{\draw[white,line width=0.5pt] ({#1-0.16},{#2+\yy}) -- ({#1+0.16},{#2+\yy}); \fill[white] ({#1+\kx},{#2+\yy}) circle (0.038);}}
+\newcommand{\icoMod}[2]{\draw[white,line width=0.5pt] ({#1-0.13},{#2-0.05}) -- ({#1},{#2-0.22}) -- ({#1+0.13},{#2-0.05}) -- cycle; \foreach \px/\py in {-0.13/-0.05,0/-0.22,0.13/-0.05}{\fill[white] ({#1+\px},{#2+\py}) circle (0.045);}}
+\newcommand{\icoInf}[2]{\foreach \bx/\bh in {-0.14/0.08,-0.05/0.15,0.04/0.23,0.13/0.3}{\fill[white] ({#1+\bx-0.03},{#2-0.28}) rectangle +(0.06,\bh);}}
+% threat card: \threat{x}{y}{width}{colour}{threat text}{section reference}
+\newcommand{\threat}[6]{%
+  \begin{scope}\clip[rounded corners=3pt] ({#1},{#2}) rectangle +({#3},1.05);\fill[white] ({#1},{#2}) rectangle +({#3},1.05);\fill[#4!13] ({#1},{#2}) rectangle +({#3},1.05);\fill[#4] ({#1},{#2}) rectangle +(0.09,1.05);\end{scope}
+  \draw[#4!70,rounded corners=3pt,line width=0.5pt] ({#1},{#2}) rectangle +({#3},1.05);
+  \node[font=\sffamily\scriptsize\bfseries,text=black!80,anchor=north west,align=left,inner sep=0pt] at ({#1+0.2},{#2+0.93}) {#5};
+  \node[font=\sffamily\scriptsize,text=#4!80!black,anchor=south west,inner sep=0pt] at ({#1+0.2},{#2+0.1}) {#6};}
+\setcounter{topnumber}{4}\setcounter{totalnumber}{6}\renewcommand{\topfraction}{0.9}\renewcommand{\textfraction}{0.1}\renewcommand{\floatpagefraction}{0.7}
+\newcommand{\fitcol}[1]{\footnotesize\resizebox{\ifdim\width>\columnwidth\columnwidth\else\width\fi}{!}{\input{#1}}}
+\newcommand{\fitwide}[1]{\footnotesize\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{\input{#1}}}
+\makeatletter
+\AtBeginDocument{\DeclareMathVersion{bold}
+\SetSymbolFont{operators}{bold}{T1}{times}{b}{n}
+\SetSymbolFont{NewLetters}{bold}{T1}{times}{b}{it}
+\SetMathAlphabet{\mathrm}{bold}{T1}{times}{b}{n}
+\SetMathAlphabet{\mathit}{bold}{T1}{times}{b}{it}
+\SetMathAlphabet{\mathbf}{bold}{T1}{times}{b}{n}
+\SetMathAlphabet{\mathtt}{bold}{OT1}{pcr}{b}{n}
+\SetSymbolFont{symbols}{bold}{OMS}{cmsy}{b}{n}
+\renewcommand\boldmath{\@nomath\boldmath\mathversion{bold}}}
+\makeatother
+
+\begin{document}
+\history{Date of publication xxxx 00, 0000, date of current version xxxx 00, 0000.}
+\doi{10.1109/ACCESS.2026.XXXXXXX}
+
+\title{Validity Threats in Data-Driven Lithium-Ion Battery State-of-Health Estimation: A Critical Review with a Controlled Evaluation-Protocol Study}
+\author{\uppercase{Huy Hoang Le}\authorrefmark{1}, \uppercase{Kim-Anh Nguyen}\authorrefmark{2}}
+\address[1]{[Affiliation of H. H. Le, country] (e-mail: lhhoang@powermore.vn)}
+\address[2]{[Affiliation of K.-A. Nguyen, country] (e-mail: [email])}
+\tfootnote{[Funding statement to be completed by the authors.]}
+\markboth
+{H. H. Le \headeretal: Validity Threats in Data-Driven Battery SOH Estimation}
+{H. H. Le \headeretal: Validity Threats in Data-Driven Battery SOH Estimation}
+\corresp{Corresponding author: Huy Hoang Le (e-mail: lhhoang@powermore.vn).}
+
+\begin{abstract}
+The accuracy reported for data-driven battery state-of-health (SOH) estimation answers a question defined by the evaluation protocol, namely what the model has seen of the target cell and what it is asked to predict. This critical review distinguishes five such questions and examines two assumptions about them: that error increases as the model sees less of the target, and that a temporal split is a safe design. The evaluation designs of 40 recent studies are mapped onto the questions, and all five questions are measured on the same test rows of five public datasets for ridge regression, boosted trees and neural networks, with cluster-bootstrap inference and Holm correction. The error increased by a factor of @@matr_LightGBM_ratio_P3_P0@@ from random folds to held-out batches on one dataset and by @@hust_LightGBM_ratio_P3_P0@@ on another. Forecasting the later life of each cell from its first 60\% gave the highest error for LightGBM on all four larger datasets; for networks the outcome depended on architecture and dataset. Early rows of the target cell, used in six calibration or fine-tuning schedules, improved the error on one dataset only. Among tabular models, @@holm_total@@ of @@flips_total@@ changes in model order between protocols remained after correction, whereas @@g33_rev_core@@ changes between questions were supported when networks were included. Selecting hyperparameters on the reported folds lowered the apparent held-out error of one boosted model by about @@opt_xjtu_xgb_pct@@ percent. A capacity-derived input removed most of the error on two datasets but increased the held-out-batch error on a third.
+\end{abstract}
+
+\begin{keywords}
+battery state of health, data leakage, evaluation protocol, generalization, hyperparameter selection, lithium-ion battery
+\end{keywords}
+
+\titlepgskip=-21pt
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+\PARstart{A}{ccurate} assessment of the state of health (SOH) of lithium-ion batteries is described as ``the cornerstone for ensuring the safety, reliability, and lifecycle value prediction of electric vehicles'' \cite{ma2026}. It is reported to enable users to ``optimize charging/discharging strategies, mitigate battery aging, and extend service life'' and to provide ``early warnings of potential hazards like thermal runaway or capacity plunge'' \cite{shan2025}, and it informs the timing for replacing batteries and decreases the costs of using electric vehicles \cite{gong2025}. SOH is commonly defined as the ratio of the current capacity of a battery to a reference capacity, which different studies take to be the rated capacity \cite{aud25}, the initial maximum capacity \cite{aud20} or the initial capacity \cite{aud22}. In the big-data era, ``data-driven techniques flourished'' \cite{shan2025}. They predict this ratio from quantities that can be measured during operation, such as features of the charging voltage curve \cite{aud12,aud17,aud31}, and they ``offer superior accuracy and adaptability but often require extensive datasets'' \cite{gong2025}. Where reference performance tests are not available in public datasets, a benchmark platform uses the ratio of the observed discharge capacity to the nominal capacity as the label \cite{zhang2024}. Hold-out validation is meant to assess ``the model's generalizability and its ability to make accurate predictions on new, unseen data'' \cite{gong2025}. The accuracy of an estimator is therefore reported as an error on a test set, and a recent review states that reported results are ``strongly affected by split design, preprocessing, and differences between training and test conditions'' \cite{sohail2026}. Published studies on the MATR dataset ``differ in at least four aspects that materially affect reported numbers'' \cite{aud53}.
+
+The test set can relate to the training set in several ways. Its cycles can belong to cells that also supplied training cycles \cite{le2026,barua2026,maher2025}, to cells that were never seen \cite{le2026,barua2026}, or to the later life of cells whose early life was used for training \cite{aud12,aud17}, and the same estimator can reach very different errors on the same data under these relations \cite{le2026,barua2026,maher2025}. This dependence is not hypothetical. A short conference paper reports that random splits ``yielded an R2 of up to 0.9999'' whereas group-wise cross-validation gave about 0.91 \cite{maher2025}, and a concurrent audit that has not yet been peer reviewed reports that 22 of 50 highly cited papers split cycles of the same cell between training and test \cite{erdogan2026}. In the experiments reported below, the error of LightGBM on MATR increased by a factor of @@matr_LightGBM_ratio_P3_P0@@ when whole batches were held out instead of random folds.
+
+Consequently, a reported accuracy can be interpreted only together with the question that the evaluation protocol poses. A recent review states that ``the evaluation protocol is equally important because it determines what a reported error actually supports'' \cite{sohail2026}. The same consideration has been formulated as a principle in machine learning for health: ``the relationship between the training and the validation set should mimic the relationship between the training set and the dataset expected for the clinical use'' \cite{saeb2017}. For battery lifetime prediction, a perspective argues that ``it is critical to consider the use cases when developing prediction models'' and that benchmarking ``should be carried out between models developed for the same use case'' \cite{geslin2023}. The consequences reach beyond the laboratory: a recent review notes that ``the vast majority of work still relies on standardized test data obtained under laboratory conditions'' \cite{ma2026}, and an analysis of one year of field data from an electric-vehicle pack concluded that laboratory data collected at constant temperature are a weak basis for robust SOH estimators \cite{pozzato2023}. The present article applies this principle to SOH estimation.
+
+The closest existing formulation for battery data is an evaluation framework along three axes, ``Vehicles-Out, Time-Rolling, Domain-Stratified'', which has been summarized for real-vehicle data and is meant to ``systematically assess models' generalization limits and engineering deployability across vehicles, time, and operating conditions'' \cite{ma2026}. That framework appears in a short conceptual section of a review and is not accompanied by experiments \cite{ma2026}. It is extended here to five questions, and these are measured on laboratory data. The argument developed in the following sections is threefold: at least five different questions are in use in the literature (Section~\ref{sec:practice}), their errors are not ordered by difficulty in the way that is usually assumed, and conclusions about model rankings, tuning, labels and inputs do not necessarily transfer from one question to another (Section~\ref{sec:analysis}).
+
+\subsection{Related Work and Research Gap}
+Although the dependence of reported accuracy on the evaluation protocol has been recognized, the existing work approaches it from separate directions and remains fragmented \cite{saeb2017,sohail2026,le2026,barua2026}. A review of electric-vehicle SOH models likewise notes that ``a comprehensive comparative analysis is lacking'' \cite{gong2025}. General machine-learning methodology supplies the concepts. Record-wise cross-validation ``often massively overestimates'' accuracy when the use case concerns new subjects \cite{saeb2017}, a taxonomy of eight types of leakage includes temporal leakage and non-independence between training and test sets \cite{kapoor2023}, and the forecasting literature treats evaluation over time as a topic of its own \cite{hewamalage2022,bergmeir2012}. These works are not specific to battery data \cite{saeb2017,kapoor2023,hewamalage2022}, and they do not indicate how large the effects are for SOH estimation.
+
+Battery reviews and benchmarks compile what published studies report. They assemble checklists from published studies \cite{sohail2026,rizanov2026} and note ``inconsistent and limited benchmarks across studies'' \cite{tan2025}. Their authors state the limits of such compilation; a protocol-stratified table, for example, ``should not be read as a complete comparison of trustworthiness'' \cite{sohail2026}. These works describe the variety of protocols in use \cite{sohail2026,rizanov2026}, but they do not measure how the error changes when only the protocol changes.
+
+Controlled measurements exist for few designs, and each is limited in scope \cite{le2026,barua2026,maher2025,erdogan2026}. On four NASA cells, shuffled five-fold validation has been compared with leave-one-battery-out validation \cite{le2026}, and predictor sets have been compared under random and leave-one-cell-out testing, where richer diagnostics ``can improve represented cell interpolation much more than unseen cell transfer'' \cite{barua2026}. With four cells, however, the number of independent units is too small for inference, and two mechanisms are confounded (Section~\ref{sec:res_nasa}). A short conference paper compares random splits with group-wise cross-validation and recommends cell-wise GroupKFold as the standard \cite{maher2025}, but only its abstract was available to the authors. A concurrent leakage audit, which has not yet been peer reviewed, reports that adding the charge capacity of the same cycle makes the apparent error 28 times smaller on 124 MATR cells \cite{erdogan2026}; its focus is leakage through cell-level splits and capacity-equivalent inputs, and it does not compare the further evaluation questions considered here.
+
+Several further works address neighboring aspects. A review of data-driven SOH assessment on real-vehicle data describes the three-axis framework named above in one section and reports no experiments of its own \cite{ma2026}; the authors are not aware of a measured comparison of such axes. A study of self-referenced features, built from each cell's earliest record, finds that ``battery health estimation depends on feature references as well as learners'' and, under a strict online reading, ``no overall online accuracy gain'' \cite{peng2026}, which is consistent with the calibration result reported here (Section~\ref{sec:res_calibration}). A pre-registered protocol for a meta-research review of evaluation design in SOH studies on the NASA dataset was deposited before data extraction and has no results yet \cite{batacandolo2026}, and a grouped-validation framework for remaining-useful-life (RUL) and SOH prediction has also been described \cite{benabdennour2026}.
+
+Collectively, these works compare two evaluation designs, study a single source of inflation, or describe a framework or protocol without measurements \cite{le2026,barua2026,maher2025,erdogan2026,ma2026,batacandolo2026,benabdennour2026}. How the error behaves across the full set of questions that studies actually pose, and with what statistical support, has remained open. Accordingly, it is not claimed here as new that cell-held-out testing increases the error, that group-wise folds should be used, or that capacity-equivalent inputs inflate accuracy. This defines the scope of the present review.
+
+\subsection{Scope and Contributions}
+The present review makes four contributions (Table~\ref{tab:novelty}).
+\begin{enumerate}
+\item A use-case taxonomy of five evaluation questions for SOH estimation is proposed (Section~\ref{sec:questions}), and 40 recent studies are mapped descriptively onto it (Section~\ref{sec:practice}).
+\item All five questions are measured on the same test rows of five public datasets with 55 to 135 cells (Section~\ref{sec:analysis}), for ridge regression, boosted trees and several network architectures. The measurements include a temporal split within cells and a calibration design in which early rows of the target cell are added to training. Two results differ from common assumptions. Forecasting the later life of a cell from its own earlier life was a more difficult question than estimating a new cell for LightGBM on every dataset (and for networks, depending on architecture and dataset), and early rows of the target cell improved the error clearly on one dataset only, whatever the calibration or fine-tuning schedule.
+\item Inference is carried out at the level of the independent unit, with a cluster bootstrap over cells or groups, multiplicity control for the ranking of models between protocols, and a leave-one-charging-policy-out design with 70 groups. Among tabular models, most changes in model order between protocols did not remain after correction, whereas some did among models that differ in kind, such as ridge regression, boosting and networks.
+\item The interaction of the protocol with hyperparameter selection, label reference and input features is examined, including selection on the reported folds and a capacity-derived input whose benefit depends on the protocol.
+\end{enumerate}
+The works above were identified by searches of arXiv, Crossref and the web carried out on 1 November 2026 and repeated on 8 November 2026; none of them compares these questions on the same rows. The search is not exhaustive, and the full text was read for only some of the works named (Table~\ref{tab:novelty}). In addition, each threat is paired with the claim that a reported error usually implies and with a controlled test (Section~\ref{sec:analysis}), and a reporting checklist is proposed that extends the lists of \cite{sohail2026,rizanov2026} (Section~\ref{sec:recs}).
+
+\begin{table*}[!t]
+\centering
+\caption{The closest controlled studies and the present work. Entries are as stated in the full texts, repositories or abstracts available to us; the status row marks what was read.}
+\label{tab:novelty}
+\footnotesize
+\begin{tabular}{p{0.075\textwidth}p{0.15\textwidth}p{0.17\textwidth}p{0.15\textwidth}p{0.17\textwidth}p{0.19\textwidth}}
+\toprule
+ & Le and Nguyen \cite{le2026} & Barua \textit{et al.} \cite{barua2026} & Maher and Yerken \cite{maher2025} & Erdo\u{g}an \cite{erdogan2026} & This work \\
+\midrule
+Status & journal article (authors' pilot) & journal article & 4-page conference paper (abstract only) & unreviewed manuscript and repository (repository read) & this article \\
+Data & four NASA cells & four NASA cells (636 cycles); eight Oxford cells for an age-only check & ``aging data'' (not named in the abstract) & MATR (124 cells); NASA and CALCE cells; four datasets in a PINN audit (82 test cells) & NASA as reference; MATR (@@matr_cells@@ cells), HUST (@@hust_cells@@), XJTU (@@xjtu_cells@@), TJU (@@tju_cells@@) \\
+Questions compared & random five-fold; leave-one-battery-out & random 80:20; leave-one-cell-out & random split; group-wise cross-validation & cell-held-out folds; proxy-feature ladder & random, cell-disjoint, held-out group, temporal, calibration, on the same rows \\
+Tuning & grid of 27 combinations, five-fold CV & nested, inner leave-one-training-cell-out & not stated in the abstract & equal tuning budget per model & fixed; inner folds by cell or group; repeated inner seeds; selection on reported folds \\
+Label and inputs & observed-maximum versus rated capacity & first-capacity versus rated target; predictor sets & not stated & capacity proxies as inputs & rated versus per-cell label; capacity-derived input under each protocol \\
+Inference & mean and SD over folds & descriptive across cells & not stated & Wilcoxon over cells & cluster bootstrap over cells or groups; Holm and Benjamini--Hochberg \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+A pilot study on four NASA cells by two of the authors \cite{le2026} preceded the present work. It is reanalyzed here as a reference condition and is not treated as independent evidence.
+
+The remainder of the paper is organized as follows. Section~\ref{sec:questions} defines the five evaluation questions and relates them to existing frameworks, and Section~\ref{sec:practice} maps the evaluation designs of 40 recent studies onto these questions. Section~\ref{sec:design} describes the datasets, models, protocols and inference procedure. Section~\ref{sec:analysis} examines each threat to validity by changing one evaluation choice at a time, and Sections~\ref{sec:families} and~\ref{sec:signals} relate the findings to common model families and input signals. Section~\ref{sec:discussion} states what the evidence does and does not support, Section~\ref{sec:recs} proposes a reporting checklist, and Sections~\ref{sec:limits} and~\ref{sec:conclusion} give the limitations and the conclusions.
+
+\section{A Taxonomy of Evaluation Questions}
+\label{sec:questions}
+Following \cite{saeb2017}, a question is defined here by the relation between what the model has seen and what it is asked to estimate (Fig.~\ref{fig:overview} and Table~\ref{tab:questions}). The five questions correspond to distinct uses of an SOH estimator, and each is represented by one protocol in the experiments.
+
+Two of the questions resemble axes of the framework of \cite{ma2026}. A new cell (Q3) resembles ``vehicles-out'', in which ``training and testing data are drawn from different vehicles'', and a forecast (Q5) resembles ``time-rolling'', which tracks the error in rolling time windows over the life of the cell. The third axis differs from Q4: ``domain-stratified'' performs ``training and validation within each stratum'' of climate, operating condition or chemistry, whereas Q4 holds a condition out. Q1 and Q2 have no counterpart in that framework, which does not mention leakage or cycle-level splits.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_overview.pdf}
+\caption{Overview of the five evaluation questions. (a) Schematic partitions of the cycles of six cells into training (blue) and test (orange) cycles; the protocol that represents each question in this study is named in panel B. (b) The same partitions applied to six real MATR cells (two per batch), with the SOH of every cycle plotted against the cycle number; grey lines are the full trajectories. (c) Pooled RMSE of ridge regression and LightGBM on MATR under each question (default hyperparameters, F1 features, late 40\% of each cell as test rows, early-rows column with $f=0.6$), and the ratio of the LightGBM error to its error under random folds (P0).}
+\label{fig:overview}
+\end{figure*}
+
+\begin{table*}[!t]
+\centering
+\caption{Five evaluation questions for SOH estimation, the protocol that matches each in this study, and examples among the studies of Table~\ref{tab:practice}.}
+\label{tab:questions}
+\footnotesize
+\begin{tabular}{p{0.04\textwidth}p{0.22\textwidth}p{0.26\textwidth}p{0.14\textwidth}p{0.20\textwidth}}
+\toprule
+ & Question & What the model has seen of the target & Protocol here & Studies (examples) \\
+\midrule
+Q1 & Estimate cycles of a cell whose other cycles, before and after, are available & cycles of the same cell on both sides of the test cycles & random folds (P0); random 60:40 within cells (PR) & \cite{aud40,aud43,aud17} \\
+Q2 & Estimate later SOH of a cell when some of its own early data are labeled (calibration, fine-tuning) & the early part of the target cell & early rows added to training (calibration) & \cite{aud25,aud49} \\
+Q3 & Estimate a cell never seen, drawn from the same pool as the training cells & other cells, usually including its condition & cell-disjoint folds (P2) & \cite{aud47,aud42,aud30,aud53} \\
+Q4 & Estimate a cell from a condition, batch or cell type absent from training & no cell of that group & held-out group (P3) & \cite{aud31,aud45,aud01} \\
+Q5 & Forecast later SOH of a cell from its earlier life & the earlier cycles of the cell (and of other cells) & temporal split (PT) & \cite{aud04,aud09,aud10,aud12,aud38,aud41} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Deployment raises the fourth question for new cell types and brands, which ``impose stringent demands on model generalizability'' \cite{shan2025}. Three assumptions about these questions are implicit in parts of the literature, and each is examined below. The first is a \emph{difficulty ordering}, according to which the error increases as the model sees less of the target, from Q1 to Q4; it is suggested by the comparisons of random and cell-held-out testing \cite{saeb2017,le2026,barua2026,maher2025}. The second is that a temporal split is a safe design because it avoids ``temporal leakage'' \cite{kapoor2023}, so that Q5 is at least as informative as Q3 or Q4. The third concerns Q2 and states that adding early data of the target cell, as in fine-tuning \cite{aud25,aud49}, lowers the error. The questions also differ in the independent unit, which is the cell for Q1 to Q3 and Q5 and the group of cells for Q4, and inference should follow that unit (Section~\ref{sec:design}).
+
+Which of these questions recent studies actually pose is considered next.
+
+\section{Evaluation Practice in the Recent Literature}
+\label{sec:practice}
+\subsection{Literature Sample and Coding}
+To establish which of these threats appear in current practice, the descriptions of evaluation in recent studies were read. The starting point was a random-order sample of open-access preprints (arXiv) and articles (Europe PMC) from 2019 to 2026 that estimate or predict battery SOH with data-driven or hybrid methods. Records were screened on title and abstract, before any methods section was read, until 60 studies were included.
+
+For 40 of the 60 studies, the passage that describes the split could be read unambiguously, and these are listed in Table~\ref{tab:practice}; Table~\ref{tab:questions} gives examples of the five questions among them.  Each entry rests on a passage that was checked against the text of the study, and a script confirmed that every number and cell identifier in the table occurs in the text of the study cited (three tokens differed only in spelling, such as ``Cell4'' for ``cell 4''). The designs are described and the question that each can answer is identified, whereas the accuracy of the models in these studies is not assessed.
+
+\begin{table*}[!t]
+\caption{Evaluation designs as stated in 40 of 60 recent studies. ``Held out'' is the unit left out of training as the text states it; the table does not rate any study.}
+\label{tab:practice}
+\centering
+\footnotesize
+\begin{tabular}{p{0.12\textwidth}p{0.30\textwidth}p{0.50\textwidth}}
+\toprule
+Study & Data & Evaluation as stated \\
+\midrule
+\multicolumn{3}{l}{\textit{Whole cells held out}} \\
+\cite{aud47} & NASA (4 cells), Oxford (8 cells) & leave one cell out \\
+\cite{aud42} & NMC cells, impedance spectra & one cell is the test set in each fold \\
+\cite{aud18} & MIT, CALCE and a commercial NCA dataset & ``strict cell-level partitioning'' \\
+\cite{aud30} & NASA, Stanford, HUST & splits enforced at the individual cell level \\
+\cite{aud53} & MATR & 99 training cells and 24 test cells \\
+\cite{aud22} & XJTU, TJU, HUST, MIT (386 batteries) & repeated battery-level protocol; five-fold cross-validation inside the training batteries \\
+\cite{aud20} & CALCE, SNL & 50\% of the batteries for training, 50\% for testing \\
+\cite{aud06} & five cells & all cells except the test cell for training (scenario 2) \\
+\cite{aud19} & seven cells & leave one cell out; the best of five random seeds is reported \\
+\cite{wang2024} & XJTU and other datasets & train on one battery, test on another; early-versus-late split of one battery is avoided to prevent leakage \\
+\midrule
+\multicolumn{3}{l}{\textit{One to a few cells in the test set}} \\
+\cite{aud24} & NASA & B0005 and B0006 for training, B0007 for testing \\
+\cite{aud32} & NASA; Oxford & B5, B6, B18 for training and B7 for testing; Oxford cells 1 to 3 for training and cell 4 for testing; the training cycles are merged and split randomly 80:20 for validation \\
+\cite{aud36} & six NCA cells at different charging rates & one cell is the test set; cycles of the other five are shuffled and split 80:20 into training and validation \\
+\cite{aud21} & cells 1 to 3 & cells 1 and 2 for training, cell 3 for testing \\
+\cite{aud54} & CALCE, LISHEN, EVE, Oxford and others & at each charging rate, one cell for training and the other two cells for testing \\
+\cite{aud25} & 19 NASA batteries & one target battery for testing; fine-tuning on 10\% of the data of the test battery \\
+\cite{aud44} & CALCE CS2 (4 batteries) & leave-one-out across batteries in one experiment; the first 200 to 800 cycles as training set in another \\
+\cite{aud46} & impedance spectra, four cells & cells 35C01 and 45C02 for training, 35C02 and 45C01 for testing, after removing the first 100 cycles of the test cells \\
+\cite{aud52} & impedance spectra, 12 coin cells & cells split into one group for training and another for testing \\
+\midrule
+\multicolumn{3}{l}{\textit{Part of one cell's data used for training}} \\
+\cite{aud29} & NASA group 1 (4 cells), University of Michigan data & the last 60 cycles of each cell are predicted from its preceding cycles and the data of the other three cells \\
+\cite{aud38} & NASA, CALCE & first 60\% of the cycles for training and validation, remaining 40\% for testing \\
+\cite{aud43} & CELL1, CELL2 & 50\% of the data of a cell for training, the rest for testing (30\% to 80\% varied); order not stated \\
+\cite{aud17} & CALCE CS2 & 50\%, 60\% and 70\% of the data as training set; order not stated \\
+\cite{aud04} & 12 cells & first 60\% of the life for training, last 40\% for testing; a model per cell \\
+\cite{aud09} & NASA B0018 & 92 cycles for training, 40 for testing; also the first 45\% of cycles \\
+\cite{aud10} & two cells & the last 8 sets of cycles left out as out-of-sample forecast \\
+\cite{aud12} & NASA, four batteries & first 55\% of each battery for training, the rest for testing \\
+\cite{aud41} & NASA & first 50 cycles (about 30\%) for training, the rest for validation \\
+\cite{aud40} & NASA B0005; Oxford cell 2 & 144 cycles for learning and 6 for testing, the test cycles chosen at given SOH levels within the cell's life \\
+\cite{aud28} & 118 cells, three datasets & four strategies: ratios within cycling conditions; ratios over the whole dataset; one temperature held out; first 80\% of each cell for training \\
+\midrule
+\multicolumn{3}{l}{\textit{Proportional split of pooled records}} \\
+\cite{aud37} & EV battery measurements, 66,302 records & 80:20 split; whether cells are shared is not stated \\
+\cite{aud60} & LiFePO$_4$ cells & 80\% of the data for training, the rest for testing; whether cells are shared is not stated \\
+\cite{aud13} & NASA subsets & 70/20/10 training, validation, test; also leave-one-out across datasets \\
+\cite{aud27} & synthetic and original data & 50/20/30 training, validation, test \\
+\cite{aud57} & battery pack data & 50:50, 70:30 and a smaller training share \\
+\midrule
+\multicolumn{3}{l}{\textit{Other cell types or conditions in the test set}} \\
+\cite{aud31} & 75 cells, four battery types & training on one cell at nominal conditions; testing on cells at the same or at different conditions \\
+\cite{aud45} & two pouch-cell types & 3.0\,Ah cells for training, 3.5\,Ah cells for testing \\
+\cite{aud49} & in-house cells and a new data set & base model trained on 8 cells; fine-tuned on one cell of the new data set \\
+\cite{aud01} & three data sets & each data set can serve as test set, the other two for training \\
+\cite{aud26} & NASA, 19 batteries & three training and evaluation splits (NASA-S, -M, -L) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Findings of the Literature Reading}
+Whole cells are held out in ten of the 40 studies, which state this explicitly, and \cite{wang2024} gives the reason: training on one battery and testing on another, ``instead of training the model with early data from battery A and testing it with later data, which avoids information leakage from the training set to the test set''. In nine further studies the test set is one to a few cells, such as B0007 \cite{aud24,aud32} or cell 3 \cite{aud21}. With one or two independent units, the pooled error describes only those cells, and for this reason results with fewer than five held-out groups are not used in the present analysis to claim a change in model ranking (Section~\ref{sec:design}).
+
+The studies also differ in the question that they pose. Predicting the later cycles of a cell from its earlier cycles \cite{aud38,aud43,aud17,aud28,aud29,aud44,aud04,aud09,aud10,aud12,aud41} and estimating the health of a cell never seen in training are different tasks. A study that mixes them in one paper, as in \cite{aud28,aud44}, reports numbers that should not be pooled. The temporal split is a forecasting design, and Section~\ref{sec:res_temporal} measures how much it changes the error.
+
+In some designs, data from the test cell enter training deliberately. In transfer settings the model is fine-tuned on a share of the target cell, for example ``with only 10\% data for fine-tuning on a testing battery'' \cite{aud25} or, in a work reviewed by \cite{aud49}, ``fine-tuned on 15\% data of unknown cells, and the rest 85\% data has been used to test the algorithm''. This is a legitimate few-shot calibration setting, but the error then answers a different question from that of a model applied to a new cell. The P0 results show how much the presence of a cell in the training data can lower the error, although in the calibration experiment of Section~\ref{sec:res_calibration} early rows of the target cell added to a pooled model gave almost no gain.
+
+The inner validation used for tuning is sometimes drawn by shuffling cycles \cite{aud32,aud36}. Two studies draw their validation data from shuffled cycles of the training cells \cite{aud32,aud36}. The outer test set is a held-out cell in these studies, but the inner scheme does not mimic that deployment. The tuning experiments reported here compared inner folds that hold out cells or groups of cells and did not include shuffled-cycle inner folds, so the size of the effect in these studies cannot be stated.
+
+In several studies, the partition is not described in sufficient detail to establish what was held out. Five studies give a proportional split of pooled records \cite{aud37,aud60,aud13,aud57,aud27}, and for \cite{aud37} and \cite{aud60} the passages that were read do not say whether cells are shared between the training and test sets. Where the same dataset is used by several studies, the partitions differ \cite{aud53}. A study on MATR observes that published studies on that dataset ``differ in at least four aspects that materially affect reported numbers'', among them the target, the units and the train/test partition, and concludes that ``cross-paper numerical comparisons should be interpreted as contextual rather than strictly apples-to-apples'' \cite{aud53}. Several studies evaluate more than one split within the same paper \cite{aud28,aud26,aud57}, which indicates that the split is a design choice, and another states that ``the above outstanding performance is owing to the same cycling condition between the trained and test cells'' \cite{aud31}.
+
+Some choices appear to have been made after the data had been seen. One study reports ``the best-performing result'' of five random seeds for each case \cite{aud19}, which amounts to selection on the test cell. Another study chose its training cells after noting discrepancies in the spectra of one cell and removed the first 100 cycles from its test cells \cite{aud46}. A third study tests on cycles picked at given SOH levels inside the life of the same cell that supplies the learning cycles \cite{aud40}, which is interpolation within one cell. These choices are reported openly in the studies, and they indicate what a description of the protocol needs to state explicitly.
+
+Finally, the label is defined in several ways. SOH is the ratio of a capacity to ``its rated capacity'' \cite{aud25}, to ``the initial maximum capacity'' \cite{aud20} or to ``initial capacity'' \cite{aud22}, and Section~\ref{sec:res_label} measures what a change of reference does to the error.
+
+\subsection{Implications for the Present Study}
+Overall, the reading shows that studies pose different questions under the common name of validation. Whole cells are held out in a quarter of the studies, but often with one to a few cells. Forecasting and the estimation of new cells are sometimes mixed, early data of the target cell enter training by design in transfer settings, partitions are frequently not described in enough detail to establish what was held out, some choices were made after the data had been seen, and the label is defined in several ways. These observations are descriptive.
+
+None of the designs in Table~\ref{tab:practice} is incorrect in itself, since each answers a different question. The review therefore takes the designs as given and measures, on the same data and models, how much the answer changes when the question changes. The reading of the studies serves as motivation only and is not used as evidence for any statistical statement in Sections~\ref{sec:analysis} to~\ref{sec:discussion}.
+
+\section{Experimental Design}
+\label{sec:design}
+This section describes the data and the procedures that are common to all experiments, so that the analysis in Section~\ref{sec:analysis} can be read as a sequence of single changes to one evaluation choice, with data, models and features otherwise fixed (Fig.~\ref{fig:design}).
+
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,font=\sffamily\scriptsize,line cap=round,line join=round,
+  chip/.style={rounded corners=2pt,minimum height=0.36cm,inner sep=1.5pt,font=\sffamily\scriptsize,align=center,text depth=0.15ex},
+  tiny/.style={font=\sffamily\scriptsize,text=black!60},
+  arr/.style={-{Triangle[length=4pt,width=5.5pt]},cNavy!45,line width=1pt},
+  rowlab/.style={rotate=90,font=\sffamily\bfseries\scriptsize,text=cNavy!70,anchor=south}]
+\def\cw{2.60}\def\gap{0.38}\def\cwg{2.98}\def\ch{4.10}\def\ox{0.55}
+% shared logic ribbon
+\draw[cNavy!35,line width=0.7pt] (\ox+\cwg+0.05,4.62) -- +(0,-0.12) -- (\ox+5*\cwg+\cw-0.05,4.5) -- +(0,0.12);
+\fill[white] (\ox+3*\cwg-1.6,4.4) rectangle +(4.6,0.5);
+\node[font=\sffamily\scriptsize,text=cNavy!80] at (\ox+3*\cwg+0.7,4.66) {identical test rows; a single evaluation choice varied at a time};
+% stage cards
+\foreach \i/\ttl in {0/Data,1/Partition,2/Features,3/Tuning,4/Models,5/Inference}{
+  \pgfmathsetmacro{\x}{\ox+\i*\cwg}
+  \fill[black!7,rounded corners=4pt] (\x+0.05,-0.05) rectangle +(\cw,\ch);
+  \fill[white,rounded corners=4pt] (\x,0) rectangle +(\cw,\ch);
+  \begin{scope}\clip[rounded corners=4pt] (\x,0) rectangle +(\cw,\ch);\shade[top color=cNavy!96,bottom color=cNavy!78] (\x,\ch-0.68) rectangle +(\cw,0.68);\end{scope}
+  \draw[black!18,rounded corners=4pt,line width=0.5pt] (\x,0) rectangle +(\cw,\ch);
+  \node[circle,fill=white,text=cNavy,inner sep=0pt,minimum size=0.4cm,font=\sffamily\bfseries\scriptsize] at (\x+0.32,\ch-0.34) {\the\numexpr\i+1\relax};
+  \node[font=\sffamily\bfseries\footnotesize,text=white,anchor=west] at (\x+0.65,\ch-0.34) {\ttl};
+}
+\icoData{\ox+\cw-0.26}{\ch-0.18}\icoSplit{\ox+1*\cwg+\cw-0.26}{\ch-0.2}\icoIn{\ox+2*\cwg+\cw-0.26}{\ch-0.15}\icoTune{\ox+3*\cwg+\cw-0.26}{\ch-0.28}\icoMod{\ox+4*\cwg+\cw-0.26}{\ch-0.15}\icoInf{\ox+5*\cwg+\cw-0.26}{\ch-0.15}
+\foreach \i in {0,...,4}{\draw[arr] ({\ox+\i*\cwg+\cw+0.05},{\ch/2-0.3}) -- +({\gap-0.1},0);}
+% 1 data and label
+\pgfmathsetmacro{\dx}{\ox}
+\node[tiny,anchor=west] at (\dx+0.18,3.12) {Datasets};
+\node[chip,fill=black!10,minimum width=1.08cm] at (\dx+0.72,2.78) {NASA};
+\node[chip,fill=cTr!88,text=white,minimum width=1.08cm] at (\dx+1.88,2.78) {MATR};
+\node[chip,fill=cTr!88,text=white,minimum width=1.08cm] at (\dx+0.72,2.34) {HUST};
+\node[chip,fill=cCon!88,text=white,minimum width=1.08cm] at (\dx+1.88,2.34) {XJTU};
+\node[chip,fill=violet!75,text=white,minimum width=1.08cm] at (\dx+0.72,1.90) {TJU};
+\draw[black!12,line width=0.5pt] (\dx+0.14,1.52) -- (\dx+\cw-0.14,1.52);
+\node[tiny,anchor=west] at (\dx+0.18,1.30) {Label reference};
+\node[chip,fill=cFe,minimum width=1.08cm] at (\dx+0.72,0.88) {Nominal};
+\node[chip,fill=cFe,minimum width=1.08cm] at (\dx+1.88,0.88) {Per-cell};
+% 2 split
+\pgfmathsetmacro{\sx}{\ox+\cwg}
+\foreach \q in {1,...,5}{\node[font=\sffamily\bfseries\scriptsize,text=black!75,anchor=west] at (\sx+0.12,{3.0-(\q-1)*0.52-0.22}) {Q\q};}
+\thumb{\sx+0.62}{3.0}{2,1,1,1,2,1,1,2,1,1}{1,1,2,1,1,1,2,1,1,2}{1,2,1,1,2,1,1,1,2,1}
+\thumb{\sx+0.62}{2.48}{1,1,1,1,1,1,1,1,1,1}{1,1,1,1,1,1,1,1,1,1}{1,1,1,1,1,1,2,2,2,2}
+\thumb{\sx+0.62}{1.96}{1,1,1,1,1,1,1,1,1,1}{1,1,1,1,1,1,1,1,1,1}{2,2,2,2,2,2,2,2,2,2}
+\thumb{\sx+0.62}{1.44}{1,1,1,1,1,1,1,1,1,1}{2,2,2,2,2,2,2,2,2,2}{1,1,1,1,1,1,1,1,1,1}
+\thumb{\sx+0.62}{0.92}{1,1,1,1,1,1,2,2,2,2}{1,1,1,1,1,1,2,2,2,2}{1,1,1,1,1,1,2,2,2,2}
+\fill[cTr] (\sx+0.3,0.2) rectangle +(0.13,0.13); \node[tiny,anchor=west] at (\sx+0.48,0.27) {Training}; \fill[cTe] (\sx+1.62,0.2) rectangle +(0.13,0.13); \node[tiny,anchor=west] at (\sx+1.8,0.27) {Test};
+% 3 inputs
+\pgfmathsetmacro{\ix}{\ox+2*\cwg}
+\foreach \k/\lab/\txt in {0/F1/{Charge features},1/F2/{Voltage points},2/F3/{+ Charge capacity}}{
+  \pgfmathsetmacro{\yy}{3.18-\k*1.0}
+  \node[chip,fill=cFe,font=\sffamily\bfseries\scriptsize,minimum width=0.55cm] at (\ix+0.45,\yy-0.2) {\lab};
+  \curve{\ix+0.98}{\yy-0.62}
+  \node[tiny,anchor=west] at (\ix+0.18,\yy-0.78) {\txt};
+}
+\foreach \dx/\dy in {0.15/0.22,0.6/0.33,1.05/0.42}{\fill[cTe] (\ix+0.98+\dx,2.18-0.62+\dy) circle (0.04);}
+\fill[cTe!80] (\ix+2.2,0.62) rectangle +(0.12,0.46);\fill[cTe!45] (\ix+2.36,0.62) rectangle +(0.12,0.32);\node[tiny] at (\ix+2.3,1.22) {$Q$};
+% 4 tuning
+\pgfmathsetmacro{\tx}{\ox+3*\cwg}
+\node[tiny,anchor=west] at (\tx+0.18,3.1) {Default};
+\draw[black!12,line width=0.5pt] (\tx+0.14,2.9) -- (\tx+\cw-0.14,2.9);
+\node[tiny,anchor=west] at (\tx+0.18,2.7) {Nested};
+\foreach \c/\t in {0/1,1/1,2/1,3/1,4/2}{\ifnum\t=2\fill[cTe]\else\fill[cTr]\fi (\tx+0.2+\c*0.2,2.52) rectangle +(0.17,-0.17);}
+\foreach \c/\t in {0/1,1/1,2/3}{\ifnum\t=3\fill[cVal]\else\fill[cTr!60]\fi (\tx+0.2+\c*0.2,2.3) rectangle +(0.17,-0.17);}
+\node[tiny,anchor=west] at (\tx+1.2,2.22) {Validation};
+\draw[black!12,line width=0.5pt] (\tx+0.14,1.84) -- (\tx+\cw-0.14,1.84);
+\node[tiny,anchor=west,text=cBad] at (\tx+0.18,1.64) {On reported folds};
+\foreach \c/\t in {0/1,1/1,2/1,3/1,4/2}{\ifnum\t=2\fill[cTe]\else\fill[cTr]\fi (\tx+0.2+\c*0.2,1.46) rectangle +(0.17,-0.17);}
+\draw[cBad,dashed,line width=0.7pt,-{Triangle[length=3pt,width=3.6pt]}] (\tx+1.12,1.26) .. controls (\tx+1.12,0.78) and (\tx+0.6,0.78) .. (\tx+0.6,1.22);
+\node[tiny,text=cBad,anchor=west] at (\tx+1.3,0.98) {Test folds};
+% 5 models
+\pgfmathsetmacro{\mx}{\ox+4*\cwg}
+\node[tiny,anchor=west] at (\mx+0.18,3.12) {Tabular};
+\foreach \k/\txt in {0/Ridge,1/LightGBM,2/{XGBoost, RF, MLP}}{\node[chip,fill=cTab,minimum width=2.3cm] at (\mx+\cw/2,{2.78-\k*0.42}) {\txt};}
+\node[tiny,anchor=west] at (\mx+0.18,1.52) {Neural networks};
+\foreach \k/\txt in {0/{GRU, Transformer},1/{LSTM, TCN, \ldots},2/{Three seeds each}}{\node[chip,fill=cNet,minimum width=2.3cm] at (\mx+\cw/2,{1.18-\k*0.42}) {\txt};}
+% 6 inference
+\pgfmathsetmacro{\fx}{\ox+5*\cwg}
+\foreach \c/\t in {0/1,1/2,2/3,3/4}{\fill[cTr!55!cTe!\t0] (\fx+0.25+\c*0.2,3.12) rectangle +(0.17,0.17);}
+\draw[arr,cNavy!30] (\fx+0.65,3.05) -- (\fx+0.65,2.85);
+\foreach \c/\t in {0/1,1/1,2/3,3/4}{\fill[cTr!55!cTe!\t0] (\fx+0.25+\c*0.2,2.66) rectangle +(0.17,0.17);}
+\node[tiny,anchor=west] at (\fx+1.3,3.0) {Cluster};\node[tiny,anchor=west] at (\fx+1.3,2.78) {bootstrap};
+\draw[black!12,line width=0.5pt] (\fx+0.14,2.4) -- (\fx+\cw-0.14,2.4);
+\foreach \c/\h in {0/0.12/,1/0.22,2/0.34,3/0.5,4/0.68}{\fill[black!38] (\fx+0.25+\c*0.2,1.62) rectangle +(0.15,\h);}
+\draw[cBad,dashed,line width=0.6pt] (\fx+0.2,1.98) -- (\fx+1.3,1.98);
+\node[tiny,anchor=west] at (\fx+1.5,1.84) {Holm, BH};
+\draw[black!12,line width=0.5pt] (\fx+0.14,1.3) -- (\fx+\cw-0.14,1.3);
+\foreach \c in {0,...,4}{\ifnum\c<4\fill[cTr]\else\draw[cTr,fill=white,line width=0.6pt]\fi (\fx+0.45+\c*0.28,0.82) circle (0.09);}
+\node[tiny] at (\fx+\cw/2,0.38) {$\geq 5$ groups};
+% connectors and threat cards
+\foreach \i in {0,...,5}{\draw[cNavy!25,line width=0.7pt] ({\ox+\i*\cwg+\cw/2},-0.06) -- +(0,-0.4);\fill[cNavy!40] ({\ox+\i*\cwg+\cw/2},-0.46) circle (0.045);}
+\threat{\ox}{-1.55}{\cw}{cCon}{Reference capacity}{Sec.~\ref{sec:res_label}}
+\threat{\ox}{-2.75}{\cw}{cExt}{Laboratory\\data only}{Sec.~\ref{sec:res_field}}
+\threat{\ox+1*\cwg}{-1.55}{\cw}{cInt}{Neighboring\\cycles of one cell}{Sec.~\ref{sec:res_nasa}, \ref{sec:res_protocol}}
+\threat{\ox+2*\cwg}{-1.55}{\cw}{cCon}{Inputs that encode\\capacity}{Sec.~\ref{sec:res_label}}
+\threat{\ox+2*\cwg}{-2.75}{\cw}{cExt}{Choice of\\feature set}{Sec.~\ref{sec:res_curve}}
+\threat{\ox+3*\cwg}{-1.55}{\cw}{cInt}{Selection on\\reported folds}{Sec.~\ref{sec:res_tuning}, \ref{sec:res_selection}}
+\threat{\ox+4*\cwg}{-1.55}{\cw}{cInt}{Extrapolation;\\target-cell rows}{Sec.~\ref{sec:res_temporal}--\ref{sec:res_arch}}
+\threat{\ox+5*\cwg}{-1.55}{\cw}{cInt}{Few units;\\multiplicity}{Sec.~\ref{sec:res_rank}, \ref{sec:res_policy}}
+% row labels and legend
+\node[rowlab] at (0.14,0.3) {Evaluation pipeline};\node[rowlab] at (0.14,-2.45) {Threat to validity};
+\foreach \k/\c/\t in {0/cInt/{Internal validity},1/cCon/{Construct validity},2/cExt/{External validity}}{\fill[\c,rounded corners=1pt] (5.4+\k*3.6,-4.05) rectangle +(0.22,0.22);\node[font=\sffamily\scriptsize,anchor=west,text=black!75] at (5.7+\k*3.6,-3.94) {\t};}
+\end{tikzpicture}
+\caption{Framework of the evaluation. Top: the six stages of an evaluation pipeline (data and label reference, split of the cycles by evaluation question, input set, hyperparameter selection, models, inference); training and test cycles are drawn schematically for the five questions Q1 to Q5. Bottom: the threat to validity associated with each stage (orange: internal, green: construct, blue: external validity) and the section in which it is examined. All experiments use the same test rows, and one evaluation choice is changed at a time.}
+\label{fig:design}
+\end{figure*}
+
+
+\subsection{Datasets}
+Table~\ref{tab:datasets} lists the datasets. The NASA cells (B0005, B0006, B0007, B0018) \cite{saha2007} are lithium-ion cells with a LiCoO\textsubscript{2} (LCO) cathode, as described in \cite{le2026}, and they serve as the reference condition.
+
+MATR denotes the fast-charging data of Severson \textit{et al.} \cite{severson2019}, which a secondary source \cite{transformer2023} describes as 124 lithium iron phosphate (LFP) cells. The three batch files used here contain @@matr_cells@@ distinct cells after five cells that continue from batch~1 into batch~2 were merged into one record. The published count of 124 is reached by also removing five cells of batch 1 and six of batch 3 (b1c8, b1c10, b1c12, b1c13, b1c22, b3c2, b3c23, b3c32, b3c37, b3c42, b3c43), as in the starter code of the data as implemented in the repository of \cite{erdogan2026}. All cells were kept in the main analyses, and the protocol comparison was repeated on the 124 cells (Section~\ref{sec:res_protocol}). The three MATR batches contain @@matr_pol_b1@@, @@matr_pol_b2@@ and @@matr_pol_b3@@ distinct charging policies, of which @@matr_pol_12@@ are shared between batches 1 and 2 and none with batch 3, so that a held-out batch is largely an unseen set of policies.
+
+HUST \cite{ma2022} comprises 77 LFP/graphite cells that share one charging protocol. In the first recorded cycle, each cell has its own four-stage discharge protocol, giving 77 distinct patterns of stage currents \cite{ma2022}. Ten groups of seven or eight cells were formed from the cell-identifier prefix. These groups overlap in their discharge-current patterns, so a held-out HUST group is a cell-disjoint fold and not an unseen discharge protocol.
+
+XJTU \cite{wang2024} comprises nickel-cobalt-manganese (NCM) cells, in the words of its publishers ``a total of 55 batteries ... conducted under 6 different charging and discharging strategies''. Labels are used only for cycles in which capacity was measured directly, which are all cycles in batches 1--3 and the capacity-test cycles in batches 4--6; interpolated capacities are not used.
+
+TJU \cite{zhu2022} is a record of ``experimental cycling data for three commercial 18650 type batteries'' (NCA, NCM and NCM+NCA), with cells ``named'' by cycling condition (temperature, charge and discharge rate). The record that was downloaded contains @@tju_cells@@ cells, whereas a study that cites this record \cite{aud28} reports 118 cells. @@tju_groups@@ groups of 3 to 28 cells each were formed from the cell type and the cycling condition. The record states no rated capacity \cite{zhu2022}, so the \textit{Nominal} label of TJU divides by the median early capacity of the cells of the same type, and cycles whose capacity falls outside 55 to 105\% of the cell's own reference are removed (under 0.2\% of the rows). No waveform features are available for TJU here, so it is not used in the charge-curve analyses.
+\begin{table}[!tb]
+\centering
+\caption{Datasets and held-out groups for protocol P3.}
+\label{tab:datasets}
+\scriptsize
+\fitcol{tables/datasets.tex}
+\end{table}
+
+\subsection{Labels and Input Features}
+The main label is $\mathrm{SOH}=100\,Q_\mathrm{D}/Q_\mathrm{nom}$, where $Q_\mathrm{D}$ is the measured discharge capacity of the cycle and $Q_\mathrm{nom}$ is the rated capacity (1.1\,Ah for MATR and HUST, 2.0\,Ah for XJTU); this is called the \textit{Nominal} label. The \textit{reference} label divides instead by the median capacity of the first labeled cycles of the same cell.
+
+Three feature sets are used. F1 contains cycle-level quantities from the charging stage that do not contain capacity: internal resistance, temperature statistics and charge time for MATR; constant-current and constant-voltage durations, charge voltages and mean constant-voltage current for HUST; and the analogous quantities and temperature for XJTU. F2 contains the voltage at fixed charge-capacity checkpoints of the same cycle, expressed as fractions of the rated capacity, and discharge data are never used. F3 equals F1 plus the charge capacity of the cycle.
+
+\subsection{Estimators, Protocols and Hyperparameter Selection}
+Ridge regression, LightGBM, XGBoost \cite{chen2016}, random forest (60 trees, 30\% subsampling) and a small multilayer perceptron (two layers of 16 units, standardized target, mean of three seeds) are implemented with scikit-learn \cite{pedregosa2011} and PyTorch \cite{paszke2019}; in the main experiments the perceptron is run with fixed hyperparameters, and a tuned variant is reported in Section~\ref{sec:res_arch}. Three protocols are used throughout. Protocol P0 consists of five folds over pooled, shuffled cycles, P2 of five folds in which all cycles of a cell fall in the same fold, and P3 of leaving one group of cells out (MATR batch or charging-rate bin, HUST identifier group, XJTU batch). Imputation and scaling are fitted on the training part only. Two regimes are compared: fixed default hyperparameters, and hyperparameters selected by an inner three-fold cross-validation (CV) search on the training part (a small grid per model). For P3 the inner folds hold out either cells or whole groups of cells. The temporal split, the calibration design and the networks are defined in the sections where they first appear (Sections~\ref{sec:res_temporal}, \ref{sec:res_calibration} and \ref{sec:res_neural}).
+
+\subsection{Evaluation Metric and Statistical Inference}
+The metric is the pooled root-mean-square error (RMSE) in percentage points of SOH. For a pair of models, the difference in pooled RMSE is computed, and its uncertainty is obtained by a paired bootstrap over independent units, which are cells for P0 and P2 and held-out groups for P3 \cite{field2007}. In this cluster bootstrap, whole cells or groups are resampled with replacement, so that the correlation among the cycles of one cell is preserved \cite{field2007}. Grouped evaluation follows \cite{roberts2017}. P0 is a reference condition in which information about neighboring cycles of a cell reaches the training data, which is a form of leakage in the sense of \cite{kaufman2012}. Selecting hyperparameters on the folds that are reported biases the estimate, and nested validation avoids this bias \cite{varma2006}.
+
+A sign change of the difference between two protocols is counted as a change in ranking. It is declared supported only if both differences have Holm-adjusted $p<0.05$ \cite{holm1979}, a step-down procedure that controls the probability of any false rejection within a family of tests. The false-discovery-rate procedure of \cite{benjamini1995} (BH) is reported alongside. The family comprises all pairwise tests of one dataset and regime, and each test uses 4000 bootstrap resamples. P3 results with fewer than five held-out groups are not used to claim a change in ranking. The code, the fixed random seeds and the result tables are listed in the data-availability statement.
+
+
+\section{Critical Analysis by Threat to Validity}
+\label{sec:analysis}
+The threats are grouped by the validity question to which they belong. Internal validity concerns whether a reported error is what the protocol claims it to be, that is, whether information that the protocol is meant to exclude has reached the test set or the tuning. Construct validity concerns whether the label and the inputs are what they appear to be. External validity concerns whether the error carries over to other cells, conditions and settings. Table~\ref{tab:framework} maps each threat to the experiment that examines it. For every threat, the implication that a reported error usually carries is stated and then examined by changing one evaluation choice while holding data, models and features fixed. Each subsection closes with a short summary of the finding.
+
+\begin{table*}[!t]
+\centering
+\caption{Threats to the validity of reported SOH accuracy, where they are discussed, and where they are examined here.}
+\label{tab:framework}
+\footnotesize
+\begin{tabular}{p{0.09\textwidth}p{0.36\textwidth}p{0.26\textwidth}p{0.2\textwidth}}
+\toprule
+Layer & Threat & Discussed in & Examined in \\
+\midrule
+Internal & Neighbouring cycles of one cell on both sides of the split & \cite{rizanov2026,sohail2026} & Sec.~\ref{sec:res_nasa}, \ref{sec:res_protocol} \\
+Internal & Preprocessing fitted before splitting & \cite{sohail2026} & Sec.~\ref{sec:res_selection} \\
+Internal & Hyperparameters chosen on the folds that are reported & \cite{varma2006} & Sec.~\ref{sec:res_tuning}, \ref{sec:res_selection} \\
+Internal & Temporal versus held-out evaluation within cells & this work & Sec.~\ref{sec:res_temporal}, \ref{sec:practice} \\
+Internal & Early data of the target cell as training data & this work & Sec.~\ref{sec:res_calibration}, \ref{sec:families} \\
+Internal & Ranking of models read from few independent units & this work & Sec.~\ref{sec:res_rank}, \ref{sec:res_policy} \\
+Construct & Capacity reference (nominal versus measured) and label provenance & \cite{zhang2024} & Sec.~\ref{sec:res_label} \\
+Construct & Inputs that encode the label (charge capacity) & this work & Sec.~\ref{sec:res_label} \\
+Construct & SOH reported by a battery management system used as reference & \cite{park2026} & discussion only \\
+External & Held-out cells, batches, charging policies, datasets & \cite{rizanov2026,sohail2026} & Sec.~\ref{sec:res_protocol}, \ref{sec:res_support} \\
+External & Laboratory versus field duty & \cite{pozzato2023,zhao2026,ma2026} & discussion only \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Overview of the Five Evaluation Questions}
+\label{sec:overview}
+Figure~\ref{fig:ladder} puts the five questions side by side. For every dataset, the pooled RMSE of ridge regression and LightGBM (default hyperparameters, F1 features, rated label) is shown for random 60:40 splits within cells (Q1), random five-fold (P0, Q1), early rows of the target cell added to training (Q2, $f=0.6$), cell-disjoint folds (P2, Q3), held-out groups (P3, Q4) and the temporal split (Q5). All but the random split are scored on the same late rows of each cell; the random split is scored on its own random test rows. Table~\ref{tab:neural} adds a GRU and a transformer, discussed in Section~\ref{sec:res_neural}, and Fig.~\ref{fig:resultmap} maps the errors of these four models under all questions on the four larger datasets.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/ladder.pdf}
+\caption{Pooled RMSE of ridge regression and LightGBM under the five evaluation questions, per dataset (log scale). Late 40\% of each cell for all bars except the random split within cells, which uses its own random test rows. Default hyperparameters, F1 features, rated label.}
+\label{fig:ladder}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_resultmap.pdf}
+\caption{Map of the pooled RMSE (\% SOH) of ridge regression, LightGBM, a GRU and a transformer under the five questions on the four larger datasets. Cell values are the RMSE; the colour is the base-2 logarithm of the ratio to the error of the same model under random folds (P0). Random split: random 60:40 split within cells; early rows: $f=0.6$ added by concatenation. All columns except the first are scored on the same late 40\% of each cell.}
+\label{fig:resultmap}
+\end{figure*}
+
+The difficulty ordering holds for the boosted model with one exception. For LightGBM the error increases from the random split to random folds, to a new cell and to a new group on MATR (@@tmp_matr_LightGBM_PR@@, @@tmp_matr_LightGBM_P0@@, @@tmp_matr_LightGBM_P2@@, @@tmp_matr_LightGBM_P3@@), XJTU (@@tmp_xjtu_LightGBM_PR@@, @@tmp_xjtu_LightGBM_P0@@, @@tmp_xjtu_LightGBM_P2@@, @@tmp_xjtu_LightGBM_P3@@) and TJU (@@tmp_tju_LightGBM_PR@@, @@tmp_tju_LightGBM_P0@@, @@tmp_tju_LightGBM_P2@@, @@tmp_tju_LightGBM_P3@@). The exception is HUST, where a held-out identifier group (@@tmp_hust_LightGBM_P3@@) is not more difficult than a held-out cell (@@tmp_hust_LightGBM_P2@@), which is consistent with the fact that the HUST groups are not distinct conditions. In the notation of the protocols, the order of the LightGBM error is therefore PR < P0 < P2 < P3 < PT on MATR, XJTU and TJU, whereas on HUST the error under P3 does not exceed that under P2.
+
+The gap between questions appears to reflect how much of a cell a model can memorize. Ridge regression changes much less than LightGBM between the random split and a new cell: on TJU from @@tmp_tju_Ridge_PR@@ to @@tmp_tju_Ridge_P2@@, against @@tmp_tju_LightGBM_PR@@ to @@tmp_tju_LightGBM_P2@@ for LightGBM. A model with little capacity to represent a particular cell is affected less when the cell is withheld. A small gap between questions is therefore not evidence that a design is safe, because it can also reflect a model that does not use cell-specific information, and the error of such a model may be high under every question (ridge regression on TJU).
+
+A temporal split was not an easier or safer substitute for a held-out cell. For LightGBM, forecasting the later life of each cell from its first 60\% produced the highest error of all questions on all four datasets (@@tmp_matr_LightGBM_PT@@, @@tmp_hust_LightGBM_PT@@, @@tmp_xjtu_LightGBM_PT@@ and @@tmp_tju_LightGBM_PT@@), above the error for held-out groups (@@tmp_matr_LightGBM_P3@@, @@tmp_hust_LightGBM_P3@@, @@tmp_xjtu_LightGBM_P3@@ and @@tmp_tju_LightGBM_P3@@). The temporal design avoids temporal leakage in the sense of \cite{kapoor2023}, but for LightGBM it answers a different and more difficult question, and for networks the outcome depends on the architecture (Sections~\ref{sec:res_temporal} and \ref{sec:res_arch}).
+
+Early rows of the target cell did not close the gap. Adding up to 60\% of the early rows of the target cell to a pooled model left the error close to that of a new cell (Section~\ref{sec:res_calibration}); the calibration bars in Fig.~\ref{fig:ladder} are nearly as high as the new-cell bars. Other fine-tuning schedules improved the error clearly only on XJTU (Section~\ref{sec:res_schedules}).
+
+\subsection{Internal Validity}
+\label{sec:internal}
+Internal validity is examined first, because the other threats are of limited interest if the reported error is not what the protocol claims it to be. The experiments proceed from the evaluation design to the choices that surround it. They begin with a reference condition on four NASA cells (Section~\ref{sec:res_nasa}) and then measure the effect of the protocol (Section~\ref{sec:res_protocol}), the temporal split (Section~\ref{sec:res_temporal}) and the use of early data of the target cell (Section~\ref{sec:res_calibration}), which is extended to sequence models, calibration schedules and further architectures (Sections~\ref{sec:res_neural} to~\ref{sec:res_arch}). The remaining subsections examine the stability of model rankings with few and with many independent groups (Sections~\ref{sec:res_rank} and~\ref{sec:res_policy}), the hyperparameter-selection scheme (Section~\ref{sec:res_tuning}), and selection on the reported folds and preprocessing (Section~\ref{sec:res_selection}).
+
+\subsubsection{Reference Condition on Four NASA Cells}
+\label{sec:res_nasa}
+The comparison of random five-fold validation and leave-one-battery-out (LOBO) validation reported in \cite{le2026} was reproduced (Table~\ref{tab:nasa}). LightGBM and CatBoost were reproduced exactly, random forest differed slightly, and XGBoost differed by more, for reasons that were not isolated. The mean increase of the error under LOBO is @@nasa_mean_increase@@\% against the published @@nasa_pub_mean@@\%, and the authors of \cite{le2026} state that ``a 119\% performance gap is observed between standard 5-fold cross-validation and LOBO validation, indicating that conventional evaluation overestimates practical accuracy''.
+
+With only four cells, however, two mechanisms are confounded. When each cell is cut into blocks of $b$ consecutive cycles and whole blocks are assigned to folds, the error grows steadily with $b$ although every cell remains in the training set (Fig.~\ref{fig:block}). For XGBoost the RMSE rises from @@block_xgb_b1@@ at $b=1$ to @@block_xgb_b64@@ at $b=64$, against @@block_xgb_lobo@@ for LOBO (LightGBM: @@block_lgb_b1@@, @@block_lgb_b64@@, @@block_lgb_lobo@@). On this dataset, the loss of neighboring cycles of the same cell can therefore account for a large part of the gap. Long blocks also remove part of the SOH range from training, so that the two effects cannot be separated here.
+\begin{table}[!tb]
+\centering
+\caption{NASA cells: published and reproduced RMSE (\% SOH) for random five-fold (5-fold) and leave-one-battery-out (LOBO).}
+\label{tab:nasa}
+\scriptsize
+\fitcol{tables/nasa.tex}
+\end{table}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/nasa_block.pdf}
+\caption{NASA cells: RMSE versus length of the test blocks (mean and standard deviation over ten random block assignments). Dashed lines: leave-one-battery-out.}
+\label{fig:block}
+\end{figure}
+
+On four cells, a substantial part of the gap between shuffled folds and leave-one-battery-out can arise without any unseen cell, so the gap cannot be attributed to cross-cell variation alone.
+
+\subsubsection{Effect of the Evaluation Protocol}
+\label{sec:res_protocol}
+Table~\ref{tab:protocol} and Fig.~\ref{fig:protocols} give the pooled RMSE with fixed hyperparameters and F1 features. For LightGBM, the ratio of the P3 error to the P0 error was @@matr_LightGBM_ratio_P3_P0@@ on MATR (@@matr_LightGBM_P0@@ to @@matr_LightGBM_P3@@), @@xjtu_LightGBM_ratio_P3_P0@@ on XJTU (@@xjtu_LightGBM_P0@@ to @@xjtu_LightGBM_P3@@), @@hust_LightGBM_ratio_P3_P0@@ on HUST (@@hust_LightGBM_P0@@ to @@hust_LightGBM_P3@@), where the absolute values remain below one percentage point, and @@tju_LightGBM_ratio_P3_P0@@ on TJU (@@tju_LightGBM_P0@@ to @@tju_LightGBM_P3@@). Ridge regression changed much less on MATR and HUST (ratios @@matr_Ridge_ratio_P3_P0@@ and @@hust_Ridge_ratio_P3_P0@@) but not on XJTU (@@xjtu_Ridge_ratio_P3_P0@@) or TJU (@@tju_Ridge_ratio_P3_P0@@), where its error is already high under P0 (@@tju_Ridge_P0@@). The size of the protocol effect is specific to the dataset, the model and the held-out condition.
+
+On MATR the effect also depends on how the groups are formed: holding out charge-rate bins instead of batches lowered the P3 error of LightGBM from @@matr_LightGBM_P3@@ to @@crate_lgb_default@@. The same grouping can be formed for XJTU (charge rates of 1C, 2C and 3C) and for TJU (0.25C, 0.5C and 1C), and it raised the LightGBM error relative to the original groups, from @@xjtu_LightGBM_P3@@ to @@cr_xjtu_LightGBM@@ on XJTU and from @@tju_LightGBM_P3@@ to @@cr_tju_LightGBM@@ on TJU. The TJU bins are strongly unbalanced (7, 114 and 9 cells), so that holding out the 0.5C bin leaves only 16 cells for training. HUST has a single charging protocol, and no such grouping exists. On the 124 cells of the published description the LightGBM errors were @@m124_LightGBM_P0@@, @@m124_LightGBM_P2@@ and @@m124_LightGBM_P3@@ under P0, P2 and P3, and those of ridge regression were @@m124_Ridge_P0@@, @@m124_Ridge_P2@@ and @@m124_Ridge_P3@@; none differed from the values for 135 cells by more than 0.2 points.
+\begin{table}[!tb]
+\centering
+\caption{Pooled RMSE (\% SOH), fixed hyperparameters, F1 features. P3 uses MATR batches, HUST identifier groups, XJTU batches and TJU type-by-condition groups; the last column holds out charge-rate bins (MATR: five bins; XJTU: 1C, 2C and 3C; TJU: 0.25C, 0.5C and 1C). n/a: HUST has a single charging protocol.}
+\label{tab:protocol}
+\scriptsize
+\fitcol{tables/protocol_rmse.tex}
+\end{table}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/protocols.pdf}
+\caption{Pooled RMSE by protocol for each dataset (fixed hyperparameters, F1 features).}
+\label{fig:protocols}
+\end{figure*}
+
+A reported error cannot be assumed to transfer between protocols: with the same model and features, the change ranged from almost none to more than a factor of three, depending on the dataset and the model.
+
+\subsubsection{Temporal Split Within Cells}
+\label{sec:res_temporal}
+Many studies in Table~\ref{tab:practice} train on the first part of each cell's life and test on the rest. This design poses a forecasting question, since the model must produce SOH values lower than those seen in training. Reviews describe the difficulty in similar terms: training datasets ``often represent a snapshot of battery aging status'', so that trained models ``can only be applied to certain battery conditions'' \cite{gong2025}, and the extrapolation capability of neural networks is ``fundamentally limited by the completeness of training data'' \cite{shan2025}. It was evaluated for MATR, HUST, XJTU and TJU with default hyperparameters, F1 features and the rated label. In the temporal protocol (PT) the first 60\% of the cycles of every cell, pooled over cells, train the model and the last 40\% are the test rows. The random protocol (PR) uses the same 60:40 proportion but assigns the cycles of each cell at random (three seeds). To compare designs on the same rows, P0, P2 and P3 were scored on the last 40\% of each cell. Intervals use a cluster bootstrap over cells with 4000 resamples; this analysis was not part of the multiplicity-controlled family of Section~\ref{sec:res_rank}.
+
+\begin{table}[!tb]
+\caption{Pooled RMSE (\% SOH): random and temporal 60:40 splits within cells, and P0, P2 and P3 scored on the last 40\% of each cell (the temporal test rows). Default hyperparameters, F1 features, rated label.}
+\label{tab:temporal}
+\centering
+\fitcol{tables/temporal.tex}
+\end{table}
+
+Forecasting the later life of each cell produced the largest error of all protocols for tree ensembles on every dataset (Table~\ref{tab:temporal}). For LightGBM, the error rose from @@tmp_matr_LightGBM_PR@@ under random 60:40 to @@tmp_matr_LightGBM_PT@@ under the temporal split on MATR, from @@tmp_hust_LightGBM_PR@@ to @@tmp_hust_LightGBM_PT@@ on HUST, from @@tmp_xjtu_LightGBM_PR@@ to @@tmp_xjtu_LightGBM_PT@@ on XJTU, and from @@tmp_tju_LightGBM_PR@@ to @@tmp_tju_LightGBM_PT@@ on TJU. Held-out batches or groups scored on the same rows gave @@tmp_matr_LightGBM_P3@@ (MATR), @@tmp_hust_LightGBM_P3@@ (HUST), @@tmp_xjtu_LightGBM_P3@@ (XJTU) and @@tmp_tju_LightGBM_P3@@ (TJU). The temporal error therefore exceeded that of whole held-out batches or groups on MATR, XJTU and TJU, and on HUST it was about twenty times as large. The ratio of the temporal to the random error was @@tmpd_matr_PT_PR_LightGBM@@ on MATR (95\% interval @@tmpd_matr_PT_PR_LightGBM_lo@@ to @@tmpd_matr_PT_PR_LightGBM_hi@@), @@tmpd_xjtu_PT_PR_LightGBM@@ on XJTU (@@tmpd_xjtu_PT_PR_LightGBM_lo@@ to @@tmpd_xjtu_PT_PR_LightGBM_hi@@) and @@tmpd_tju_PT_PR_LightGBM@@ on TJU (@@tmpd_tju_PT_PR_LightGBM_lo@@ to @@tmpd_tju_PT_PR_LightGBM_hi@@).
+
+The first explanation examined is extrapolation (Fig.~\ref{fig:extrap}). Many test values lie outside the range of the training values, and random forests are known to perform poorly in this setting \cite{zhang2019rerf}. The share of test rows with an SOH below the lowest SOH in training was @@tmprng_matr_below@@\% on MATR, @@tmprng_hust_below@@\% on HUST, @@tmprng_xjtu_below@@\% on XJTU and @@tmprng_tju_below@@\% on TJU. Table~\ref{tab:range} splits the error by this criterion. For LightGBM the RMSE on the out-of-range rows was @@rs_hust_LightGBM_out@@ on HUST, @@rs_xjtu_LightGBM_out@@ on XJTU and @@rs_matr_LightGBM_out@@ on MATR, against @@rs_hust_LightGBM_in@@, @@rs_xjtu_LightGBM_in@@ and @@rs_matr_LightGBM_in@@ on the in-range rows. Models that extrapolate smoothly had a low out-of-range error on HUST, namely ridge regression @@rs_hust_Ridge_out@@, the TCN @@rs_hust_TCN_out@@ and the window MLP @@rs_hust_WinMLP_out@@.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_extrap.pdf}
+\caption{Mechanism of the temporal result. (a)--(c) One cell of median error in each dataset: training rows (blue), true SOH of the test rows (black), and the predictions of LightGBM (orange) and ridge regression (dashed green); the dotted line is the lowest SOH among the training rows of all cells. (d)--(f) Predicted against true SOH for a random sample of 5000 test rows; the shaded region lies below the training range. (g)--(i) RMSE on test rows within and below the training range for five models (LGBM: LightGBM; w-MLP: window MLP). Predictions of LightGBM stop declining near the lowest training SOH.}
+\label{fig:extrap}
+\end{figure*}
+
+
+\begin{table}[!tb]
+\caption{RMSE (\% SOH) of the temporal forecast on late rows whose SOH lies within or below the range of the training rows. The column ``Share below'' gives the share of late rows with an SOH below the training range; n/a: no late row of TJU lies below the training range.}
+\label{tab:range}
+\centering
+\fitcol{tables/range_split.tex}
+\end{table}
+
+A hybrid in which LightGBM models the residuals of a ridge regression tests this explanation directly. The hybrid lowered the temporal error on HUST from @@tmp_hust_LightGBM_PT@@ to @@iv_hust_Ridge_plus_LightGBM_PT@@ and on XJTU from @@tmp_xjtu_LightGBM_PT@@ to @@iv_xjtu_Ridge_plus_LightGBM_PT@@; it left the error unchanged on MATR (@@iv_matr_Ridge_plus_LightGBM_PT@@) and increased it on TJU (@@iv_tju_Ridge_plus_LightGBM_PT@@ against @@tmp_tju_LightGBM_PT@@). Its P3 error was lower than that of LightGBM on MATR, HUST and XJTU and higher on TJU (@@iv_tju_Ridge_plus_LightGBM_P3@@ against @@tmp_tju_LightGBM_P3@@). LightGBM with linear leaves was unstable on XJTU (errors above 10\,000 points under P3) and is therefore not informative.
+
+TJU does not fit this explanation, because none of its test rows lies below the training range. There the mean LightGBM prediction (@@tmprng_tju_lgbm@@) still exceeded the true mean (@@tmprng_tju_true@@), and the error was concentrated in a few cells: the 10\% of cells with the largest errors carried @@tc_tju_top10@@\% of the squared error, against @@tc_hust_top10@@ to @@tc_xjtu_top10@@\% on HUST, XJTU and MATR. The late rows of TJU also differ from the training rows in the charge-stage features, by @@fs_tju_v_cc_start@@ standard deviations for the voltage at the start of the constant-current phase and @@fs_tju_t_ratio@@ for the ratio of constant-voltage to constant-current time. Adding the cycle number as an input lowered the temporal error of LightGBM on TJU from @@cyc_tju_LightGBM_PT_F1@@ to @@cyc_tju_LightGBM_PT_plus@@ and that of ridge regression from @@cyc_tju_Ridge_PT_F1@@ to @@cyc_tju_Ridge_PT_plus@@, whereas on MATR, HUST and XJTU it changed the LightGBM error by at most 0.4 points.
+
+A second modification gives the model a reference to the cell's own early record. In these self-referenced inputs, each F1 feature minus its median over the first ten cycles of the cell is added to F1. The modification lowered the temporal error of LightGBM on MATR from @@sr_matr_LightGBM_PT_F1@@ to @@sr_matr_LightGBM_PT_plus@@, on XJTU from @@sr_xjtu_LightGBM_PT_F1@@ to @@sr_xjtu_LightGBM_PT_plus@@ and on TJU from @@sr_tju_LightGBM_PT_F1@@ to @@sr_tju_LightGBM_PT_plus@@, and it did not help on HUST (@@sr_hust_LightGBM_PT_plus@@). The P3 error of LightGBM was also lower on the same three datasets (MATR @@sr_matr_LightGBM_P3_F1@@ to @@sr_matr_LightGBM_P3_plus@@, TJU @@sr_tju_LightGBM_P3_F1@@ to @@sr_tju_LightGBM_P3_plus@@). Ridge regression with these inputs was unstable under P3 on XJTU and TJU (errors of @@sr_xjtu_Ridge_P3_plus@@ and @@sr_tju_Ridge_P3_plus@@), which is an effect of collinear inputs that was not pursued.
+
+Taken together, these results indicate that extrapolation outside the training range explains the temporal result on HUST, largely on XJTU and only in part on MATR. On TJU a drift of the charge features contributes, and the cycle number or a reference to the early record of the cell partly corrects it. The error that remains on TJU (@@cyc_tju_LightGBM_PT_plus@@ with the cycle number, @@sr_tju_LightGBM_PT_plus@@ with self-referenced inputs) is not explained. It does not appear to result from fast fading: the third of TJU cells whose SOH falls fastest in the test rows carries @@fade_tju_share@@\% of the squared error (@@fade_matr_share@@\% on MATR), and the rank correlation between the error of a cell and its fade rate is @@fade_tju_rho@@ on TJU (@@fade_matr_rho@@ on MATR).
+
+The order of the models depended on the task. The difference in RMSE between ridge regression and LightGBM (ridge minus LightGBM) is considered for each dataset.
+
+On XJTU the difference was @@tmpd_xjtu_PR@@ under random 60:40, @@tmpd_xjtu_P0@@ under P0 and @@tmpd_xjtu_P2@@ under P2, so that ridge regression was less accurate, but it was @@tmpd_xjtu_PT@@ (95\% interval @@tmpd_xjtu_PT_lo@@ to @@tmpd_xjtu_PT_hi@@) under the temporal split, where ridge regression was more accurate. On TJU, ridge regression was less accurate than LightGBM under every protocol, by @@tmpd_tju_P0@@ under P0 and by @@tmpd_tju_PT@@ under the temporal split.
+
+On HUST the two models could not be distinguished under random 60:40 (@@tmpd_hust_PR@@, interval @@tmpd_hust_PR_lo@@ to @@tmpd_hust_PR_hi@@) and under P0; ridge regression was more accurate under P2 (@@tmpd_hust_P2@@) and P3 (@@tmpd_hust_P3@@), and considerably more accurate under the temporal split (@@tmpd_hust_PT@@). On MATR, ridge regression was less accurate under random 60:40 (@@tmpd_matr_PR@@), P0 (@@tmpd_matr_P0@@), P2 (@@tmpd_matr_P2@@) and the temporal split (@@tmpd_matr_PT@@), whereas under P3 on the same rows the difference (@@tmpd_matr_P3@@, interval @@tmpd_matr_P3_lo@@ to @@tmpd_matr_P3_hi@@) could not be distinguished from zero.
+
+A temporal split requires extrapolation to lower SOH, and on HUST and XJTU the error of a model class appeared to depend mainly on its ability to extrapolate. Errors from temporal splits are therefore not directly comparable with those from held-out cells, and the task should be named in the report. The result is limited to one 60:40 proportion, default hyperparameters, a pooled model and cycle-level features without cycle number.
+
+\subsubsection{Use of Early Data of the Target Cell}
+\label{sec:res_calibration}
+Fine-tuning and calibration studies allow the model to see part of the target cell before it is tested \cite{aud25,aud49}. This subsection measures the value of such data for pooled models. Cell-disjoint five-fold partitions were used (two random partitions). The training set comprised all rows of the cells outside the fold plus the first fraction $f$ of the rows, ordered by cycle, of every cell inside the fold, and the test rows were the last 40\% of each fold cell. With $f=0$ the cell is new, which corresponds to P2 scored on the same rows; with $f=0.6$ all non-test rows of the target cell are available. LightGBM and ridge regression, both with default hyperparameters, were compared with a ridge model fitted to the early rows of the target cell alone (Table~\ref{tab:calibration}).
+
+\begin{table}[!tb]
+\caption{RMSE (\% SOH) on the last 40\% of the rows of the fold cells when the first fraction $f$ of the rows of each target cell is added to training. Default hyperparameters, F1 features, rated label. Target-only ridge uses the early rows of the cell alone.}
+\label{tab:calibration}
+\centering
+\fitcol{tables/calibration.tex}
+\end{table}
+
+For the pooled models, the early rows of the target cell changed the error very little. For LightGBM, going from $f=0$ to $f=0.6$ changed the RMSE from @@cal_matr_LightGBM_0p0@@ to @@cal_matr_LightGBM_0p6@@ on MATR, from @@cal_hust_LightGBM_0p0@@ to @@cal_hust_LightGBM_0p6@@ on HUST, from @@cal_xjtu_LightGBM_0p0@@ to @@cal_xjtu_LightGBM_0p6@@ on XJTU and from @@cal_tju_LightGBM_0p0@@ to @@cal_tju_LightGBM_0p6@@ on TJU. The largest change in any dataset was below 0.1 point, and only on XJTU did the interval of the difference (@@calc_xjtu_LightGBM_f0p6_minus_f0@@, @@calc_xjtu_LightGBM_f0p6_minus_f0_lo@@ to @@calc_xjtu_LightGBM_f0p6_minus_f0_hi@@) exclude zero. Ridge regression became slightly less accurate on MATR (@@calc_matr_Ridge_f0p6_minus_f0@@, interval @@calc_matr_Ridge_f0p6_minus_f0_lo@@ to @@calc_matr_Ridge_f0p6_minus_f0_hi@@). Giving the target rows ten times the weight did not improve LightGBM (largest increase of the error @@calc_matr_LightGBM_w_minus_LightGBM_f0p6@@ points on MATR).
+
+The per-cell ridge model trained on the early rows alone was less accurate than pooled LightGBM at every $f$ and on every dataset. At $f=0.6$ the difference (target-only minus pooled) was @@calc_xjtu_TargetRidge_minus_LightGBM_f0p6@@ on XJTU, @@calc_tju_TargetRidge_minus_LightGBM_f0p6@@ on TJU, @@calc_hust_TargetRidge_minus_LightGBM_f0p6@@ on HUST and @@calc_matr_TargetRidge_minus_LightGBM_f0p6@@ on MATR.
+
+The comparison with the temporal split is informative. A new cell scored on the same late rows had a LightGBM error of @@cal_matr_LightGBM_0p0@@ on MATR when the other cells contributed their whole life, whereas the error was @@tmp_matr_LightGBM_PT@@ under the temporal split, in which every cell contributed only its first 60\%. Most of the difference between the two designs is attributable to the training rows from the late life of other cells and not to the history of the target cell.
+
+The early record of a cell was useful in a different role, namely as a reference for its own inputs. The self-referenced inputs of Section~\ref{sec:res_temporal} lowered the error of LightGBM under P2 on MATR from @@sr_matr_LightGBM_P2_F1@@ to @@sr_matr_LightGBM_P2_plus@@ and on XJTU from @@sr_xjtu_LightGBM_P2_F1@@ to @@sr_xjtu_LightGBM_P2_plus@@, and the error of ridge regression on TJU from @@sr_tju_Ridge_P2_F1@@ to @@sr_tju_Ridge_P2_plus@@. This is consistent with the finding of \cite{peng2026} that references matter, although that study reported no gain under its strict online reading.
+
+In this setting, adding early rows of the target cell to the training data of a pooled model gave almost no benefit, and access to late-life data of other cells was more valuable than the early history of the cell itself. A study that reports a gain from fine-tuning should therefore include a baseline that receives the same target rows and a training pool that contains late-life data. The result is limited to concatenation for pooled models with default hyperparameters, cycle-level features without a cycle number or cell identifier, and one early-data schedule; networks and other schedules follow in Sections~\ref{sec:res_neural} and \ref{sec:res_schedules}.
+
+\subsubsection{Sequence Models with Cycle History}
+\label{sec:res_neural}
+Many studies in Table~\ref{tab:practice} use sequence models that read several preceding cycles \cite{aud24,aud26,aud01,aud13}. A gated recurrent unit (GRU) network and a small transformer encoder were trained on windows of the 10 most recent cycles of the F1 features of a cell, with the window padded with the first cycle at the start of a cell. The GRU had one layer of 32 units, the transformer two layers of width 32 with four attention heads, and both ended in a small feed-forward head. Training used Adam (learning rate $2\times10^{-3}$, 12 epochs, batch 512) on every first, second or fourth training row, depending on the size of the data, with one seed and no tuning.
+
+The networks were run under all five questions with the same definitions as above (one random partition for P0, P2 and the early-rows design). In the early-rows design (Q2) they were trained either on the concatenated data or, for fine-tuning, first on the cells outside the fold and then for three epochs on the early rows of the fold cells (learning rate $3\times10^{-4}$, all weights). Table~\ref{tab:neural} gives the results; intervals in the text come from a cluster bootstrap over cells.
+
+\begin{table}[!tb]
+\caption{RMSE (\% SOH) of ridge regression, LightGBM, a GRU and a transformer under the five questions, scored on the last 40\% of each cell (the random split on its own random test rows). Default hyperparameters for ridge and LightGBM; one untuned run for the networks. Early rows: $f=0.6$ added to training by concatenation.}
+\label{tab:neural}
+\centering
+\fitcol{tables/neural.tex}
+\end{table}
+
+The sequence models did not change the difficulty ordering. Their error also increased from random folds to a new cell to a new group on MATR, XJTU and TJU. On HUST it did not (GRU @@nn_hust_GRU_P0@@ under P0 and @@nn_hust_GRU_P3@@ under P3), as for the other models, because the HUST groups are not distinct conditions.
+
+Forecasting the later life of a cell (Q5) gave a higher error than held-out groups for seven of the eight combinations of network and dataset; the exception was the GRU on TJU (@@nn_tju_GRU_PT@@ against @@nn_tju_GRU_P3@@). On HUST the temporal error was @@nn_hust_GRU_PT@@ for the GRU and @@nn_hust_TRF_PT@@ for the transformer, against @@nn_hust_Ridge_PT@@ for ridge regression. The high error under the temporal question is not specific to tree ensembles: on HUST only the linear model forecast accurately, and on MATR every model had a higher temporal error than held-out-group error.
+
+The ranking of models depended on the question. On XJTU the transformer had a lower error than LightGBM under P0 (difference @@nnd_xjtu_TRF_minus_LightGBM_P0@@, interval @@nnd_xjtu_TRF_minus_LightGBM_P0_lo@@ to @@nnd_xjtu_TRF_minus_LightGBM_P0_hi@@) and P2 (@@nnd_xjtu_TRF_minus_LightGBM_P2@@, @@nnd_xjtu_TRF_minus_LightGBM_P2_lo@@ to @@nnd_xjtu_TRF_minus_LightGBM_P2_hi@@) but a higher error under P3 (@@nnd_xjtu_TRF_minus_LightGBM_P3@@, @@nnd_xjtu_TRF_minus_LightGBM_P3_lo@@ to @@nnd_xjtu_TRF_minus_LightGBM_P3_hi@@). On HUST the GRU had the lowest error of all models under every question from Q1 to Q4, whereas ridge regression was considerably more accurate under the temporal split (GRU minus ridge @@nnd_hust_GRU_minus_Ridge_PT@@, interval @@nnd_hust_GRU_minus_Ridge_PT_lo@@ to @@nnd_hust_GRU_minus_Ridge_PT_hi@@). On MATR the GRU had a higher error than LightGBM under P2 (@@nnd_matr_GRU_minus_LightGBM_P2@@, interval @@nnd_matr_GRU_minus_LightGBM_P2_lo@@ to @@nnd_matr_GRU_minus_LightGBM_P2_hi@@), and on TJU the differences under Q1 to Q3 were small (GRU minus LightGBM @@nnd_tju_GRU_minus_LightGBM_P2@@ under P2).
+
+These intervals use the cell as the unit, also for P3. Section~\ref{sec:res_rank} repeats the comparisons with the group as the unit for P3 and with Holm correction, and the two changes of order named here remain supported there.
+
+Fine-tuning on the early rows did not reduce the error. Compared with concatenation at $f=0.6$, the fine-tuned networks had a higher error on MATR (GRU @@nnd_matr_GRU_finetune_minus_concat_f0p6@@, transformer @@nnd_matr_TRF_finetune_minus_concat_f0p6@@), on HUST (@@nnd_hust_GRU_finetune_minus_concat_f0p6@@ and @@nnd_hust_TRF_finetune_minus_concat_f0p6@@) and on TJU (@@nnd_tju_GRU_finetune_minus_concat_f0p6@@ and @@nnd_tju_TRF_finetune_minus_concat_f0p6@@), and no lower error on XJTU (@@nnd_xjtu_GRU_finetune_minus_concat_f0p6@@ and @@nnd_xjtu_TRF_finetune_minus_concat_f0p6@@). A possible explanation is that the early rows cover only the high-SOH part of the range, so that updating all weights on them shifts the predictions upward; this was not tested. The recipe is simple, and more careful fine-tuning schedules, frozen layers or per-cell adapters might perform better.
+
+The findings for the pooled models carry over to the GRU and the transformer in three respects: the difficulty ordering, the high error of forecasting for these two networks, and the absence of a benefit from early rows of the target cell by concatenation or by this fine-tuning recipe. They do not carry over to the ranking of models, which changed with the question. The next two subsections examine other schedules and architectures and qualify the statement about forecasting.
+
+\subsubsection{Calibration and Fine-Tuning Schedules}
+\label{sec:res_schedules}
+The fine-tuning of Section~\ref{sec:res_neural} used a single, simple recipe. Further schedules were compared for the GRU on the same cell-disjoint folds, with three seeds and $f\in\{0.2,0.6\}$. A base network is trained on the cells outside the fold, and the early rows of the fold cells are then used in one of five ways.
+The first schedule, concat, retrains the network from scratch with the early rows added. In the head-only schedule, the recurrent layers are frozen and the output layers are trained for five epochs (learning rate $10^{-3}$). The low-lr schedule trains all weights for three epochs at $5\times10^{-5}$, and the replay schedule trains all weights for three epochs at $3\times10^{-4}$ on the early rows plus an equally large random sample of the training rows, which limits drift toward the high-SOH range. The offset schedule involves no retraining: the median residual of the base model on the early rows of a cell is added to its later predictions, which is a per-cell adapter with one parameter. The offset was also applied to LightGBM and ridge regression.
+Table~\ref{tab:finetune} gives the results at $f=0.6$.
+
+\begin{table*}[!t]
+\caption{RMSE (\% SOH) on the last 40\% of each fold cell after using the first 60\% of its rows: base models trained without them, and calibration schedules. GRU: mean over three seeds of the squared error; LGBM = LightGBM; offset = per-cell median residual on the early rows.}
+\label{tab:finetune}
+\centering
+\fitwide{tables/finetune.tex}
+\end{table*}
+
+No schedule improved the error consistently (Fig.~\ref{fig:schedules}). At $f=0.6$, concatenation and replay changed the GRU error by at most 0.15 points (XJTU, concatenation @@ftc_xjtu_GRU_concat_f0p6_minus_base@@, interval @@ftc_xjtu_GRU_concat_f0p6_minus_base_lo@@ to @@ftc_xjtu_GRU_concat_f0p6_minus_base_hi@@), and the other changes were of the order of 0.01 to 0.08 point. Freezing the recurrent layers increased the error on MATR (@@ftc_matr_GRU_head_f0p6_minus_base@@) and HUST (@@ftc_hust_GRU_head_f0p6_minus_base@@), and low-lr tuning increased it on MATR (@@ftc_matr_GRU_lowlr_f0p6_minus_base@@).
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_schedules.pdf}
+\caption{Use of early rows of the target cell. (a) Change in the pooled LightGBM RMSE on the late 40\% of each fold cell when a growing share of the early rows of the cell is added to training; the legend gives the error without target rows. (b) Change in the late-row RMSE (points of SOH; blue lower, red higher) of five calibration schedules of a GRU (pooled training with the early rows added by concatenation, head only, low learning rate, replay and per-cell offset) and of the per-cell offset applied to LightGBM and ridge regression, relative to the same model trained without target rows (base error in the row labels).}
+\label{fig:schedules}
+\end{figure*}
+
+The sign of the effect of the offset depended on the dataset. On XJTU it lowered the error of the GRU (@@ftc_xjtu_GRU_offset_f0p6_minus_base@@, interval @@ftc_xjtu_GRU_offset_f0p6_minus_base_lo@@ to @@ftc_xjtu_GRU_offset_f0p6_minus_base_hi@@) and of LightGBM (@@ftc_xjtu_LightGBM_offset_f0p6_minus_base@@), and on TJU it lowered the error of ridge regression (@@ftc_tju_Ridge_offset_f0p6_minus_base@@). On MATR it increased the error of LightGBM (@@ftc_matr_LightGBM_offset_f0p6_minus_base@@, interval @@ftc_matr_LightGBM_offset_f0p6_minus_base_lo@@ to @@ftc_matr_LightGBM_offset_f0p6_minus_base_hi@@) and of ridge regression (@@ftc_matr_Ridge_offset_f0p6_minus_base@@).
+
+A lack of persistence of the residual does not explain this difference. The mean early residual of a cell and its mean late residual were rank-correlated in every dataset except HUST (Spearman @@op_xjtu_LightGBM_rho@@ for LightGBM on XJTU, @@op_matr_LightGBM_rho@@ on MATR, @@op_tju_LightGBM_rho@@ on TJU, @@op_hust_LightGBM_rho@@ on HUST). An oracle shift equal to the late residual of each cell would have lowered the LightGBM error from @@od_matr_LightGBM_base@@ to @@od_matr_LightGBM_oracle@@ on MATR, from @@od_xjtu_LightGBM_base@@ to @@od_xjtu_LightGBM_oracle@@ on XJTU and from @@od_hust_LightGBM_base@@ to @@od_hust_LightGBM_oracle@@ on HUST. The estimate from early life captured this gain on XJTU (@@od_xjtu_LightGBM_median@@) but not on MATR (@@od_matr_LightGBM_median@@), and using the mean instead of the median residual gave the same picture (@@od_matr_LightGBM_mean@@ on MATR). The hypothesis that the early residual persists in some datasets and not in others is therefore not supported.
+
+Cell length accounts for part of the effect. On MATR the offset improved the late error of @@ob_matr_short_share@@\% of the shortest third of cells but of only @@ob_matr_long_share@@\% of the longest third; the longest third carries @@ob_matr_long_rows@@\% of the late rows, and its mean squared error increased from @@ob_matr_long_base@@ to @@ob_matr_long_adj@@. On XJTU the offset improved @@ob_xjtu_long_share@@\% of the longest cells. The pooled loss on MATR originates in long-lived cells whose early residual does not predict their late behavior. This is associated with a change of sign of the model bias over the life of the cell. Among the shortest-lived third of MATR cells the early and the late residual had the same sign in @@mm_matr_short_same@@\% of the cells (slope of late on early @@mm_matr_short_slope@@), whereas among the longest-lived third this held in only @@mm_matr_long_same@@\% (slope @@mm_matr_long_slope@@), with a mean early residual of @@mm_matr_long_early@@ and a mean late residual of @@mm_matr_long_late@@ points. LightGBM underestimates the SOH of these cells early in life and overestimates it late, and the late residual decreases with the logarithm of cycle life (Spearman @@mm_matr_lifecorr@@). An offset estimated from early life consequently shifts the late predictions in the wrong direction.
+
+A change of sign of this kind is what regression toward the mean of the SOH range would produce, and such a pattern is present on MATR (Fig.~\ref{fig:offset}) (the residual increases by @@shr_matr_slope@@ points per point of true SOH, against @@shr_xjtu_slope@@ on XJTU, @@shr_tju_slope@@ on TJU and @@shr_hust_slope@@ on HUST). It is not removed by a global correction, however: a linear recalibration of the prediction, fitted on inner out-of-fold predictions of the training cells, increased the late-row RMSE of LightGBM on MATR from @@shr_matr_base@@ to @@shr_matr_rec@@. On XJTU and TJU the share of cells with the same sign remained above 50\% in every life tercile.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_offset.pdf}
+\caption{Mechanism of the offset results (out-of-fold predictions of LightGBM). (a) Mean residual (true minus predicted) against the fraction of cell life for the three terciles of MATR cells by cycle life; the dotted line marks the end of the early rows; bands are 95\% intervals. (b), (c) Mean late residual against mean early residual for each cell of the shortest-lived and the longest-lived third of MATR cells, with the least-squares line. (d) Mean residual against true SOH in bins, for the four larger datasets. (e), (f) Late-row RMSE of LightGBM with and without a per-cell offset (median early residual) by tercile of cycle life on MATR and XJTU.}
+\label{fig:offset}
+\end{figure*}
+
+
+With five schedules and three model classes, early labeled rows of the target cell improved the best model clearly only on XJTU, where a one-parameter offset performed as well as any retraining; on TJU an offset improved ridge regression, which is a weak model there. On MATR several schedules increased the error. A claim that fine-tuning or calibration helps should therefore report the sign of the effect for each dataset together with a baseline that uses a per-cell offset.
+
+\subsubsection{Network Architectures, Window Length and Random Seeds}
+\label{sec:res_arch}
+To examine whether the findings depend on the architecture, the following were added: an LSTM, a temporal convolutional network (TCN; three causal dilated layers), a multilayer perceptron on the flattened window of ten cycles, a GRU with a window of 30 cycles, and two further seeds of the GRU and the transformer (Table~\ref{tab:arch}; same definitions and partitions as in Section~\ref{sec:res_neural}).
+
+\begin{table}[!tb]
+\caption{RMSE (\% SOH) of further architectures under P0, P2, P3 and the temporal split (last 40\% of each cell). One untuned run per architecture; seed 0 for the GRU and the transformer.}
+\label{tab:arch}
+\centering
+\fitcol{tables/arch.tex}
+\end{table}
+
+The question with the highest error depends on the architecture. On MATR and HUST the temporal error was higher than the held-out-group error for every architecture. On XJTU it was higher for all except the TCN (@@arch_xjtu_TCN_PT@@ against @@arch_xjtu_TCN_P3@@) and the window MLP (@@arch_xjtu_WinMLP_PT@@ against @@arch_xjtu_WinMLP_P3@@), and on TJU it was higher only for the transformer. On HUST the window MLP and the TCN forecast almost as accurately as ridge regression (@@arch_hust_WinMLP_PT@@ and @@arch_hust_TCN_PT@@ against @@arch_hust_Ridge_PT@@), whereas the GRU, the LSTM and the transformer did not (@@arch_hust_GRU_PT@@, @@arch_hust_LSTM_PT@@ and @@arch_hust_TRF_PT@@). The difficulty ordering from random folds to a new cell to a new group held on MATR, XJTU and TJU for all architectures.
+
+Seed variation is comparable to many differences between models. Across three seeds the GRU P3 error on XJTU ranged from @@seed_xjtu_GRU_P3_min@@ to @@seed_xjtu_GRU_P3_max@@, and the transformer P3 error on TJU from @@seed_tju_TRF_P3_min@@ to @@seed_tju_TRF_P3_max@@. This spread is comparable to the differences between neighboring architectures, so single-run rankings among networks are not reliable. Two further seeds were run for the LSTM, TCN, window MLP, CNN-GRU and attention GRU, so that all seven network architectures have three seeds.
+
+Seed variation was small relative to most differences between questions. The median range of the RMSE over the three seeds was @@ss_P2_med@@ points under P2, @@ss_P3_med@@ under P3 and @@ss_PT_med@@ under the temporal split, although single cases reached @@ss_P2_max@@, @@ss_P3_max@@ and @@ss_PT_max@@ points. The sign of the difference to LightGBM was the same in all three seeds in @@ss_P2_agree@@ of @@ss_P2_cases@@ combinations of architecture and dataset under P2, in @@ss_P3_agree@@ under P3 and in @@ss_PT_agree@@ under the temporal split, and whether the temporal error exceeded the held-out-group error was the same in all three seeds in @@ss_ptp3_consistent@@ of @@ss_ptp3_cases@@ combinations. Seed variation thus affects magnitudes more than the qualitative statements made here.
+
+The tuned variants were repeated in the same way, with two further seeds and the hyperparameters of the first run kept (@@tss_P2_cases@@ combinations of variant and dataset). The median range over the three seeds was @@tss_P2_med@@ points under P2, @@tss_P3_med@@ under P3 and @@tss_PT_med@@ under the temporal split, with single cases of up to @@tss_P2_max@@, @@tss_P3_max@@ and @@tss_PT_max@@ points. The sign of the difference to LightGBM was the same in all seeds in @@tss_P2_agree@@ of @@tss_P2_cases@@ combinations under P2, @@tss_P3_agree@@ under P3 and @@tss_PT_agree@@ under the temporal split. The statement that the temporal error exceeds the held-out-group error was less stable: it held in all three seeds, or in none, in @@tss_ptp3_consistent@@ of @@tss_ptp3_cases@@ combinations, and in only @@tss_ptp3_xjtu@@ of @@tss_ptp3_xjtu_n@@ on XJTU (HUST @@tss_ptp3_hust@@ of @@tss_ptp3_hust_n@@, MATR @@tss_ptp3_matr@@, TJU @@tss_ptp3_tju@@). For tuned networks on XJTU, the claim that forecasting is more difficult than estimating a held-out group is therefore not stable across seeds, because the two errors are of similar size there.
+
+Against LightGBM, every architecture had a higher P3 error on XJTU (differences @@ftc_xjtu_TCN_minus_LightGBM_P3@@ for the TCN and @@ftc_xjtu_WinMLP_minus_LightGBM_P3@@ for the window MLP), whereas on HUST all were lower, so the dataset influenced the order more than the architecture did. A longer window lowered the error of the GRU under P2 on MATR (@@arch_matr_GRU_L30_P2@@ against @@arch_matr_GRU_P2@@) but not under P3 (@@arch_matr_GRU_L30_P3@@ against @@arch_matr_GRU_P3@@).
+
+Tuning the networks did not alter the overall picture. A GRU whose hidden size and learning rate were chosen on an inner validation set (a temporal inner split for the forecast), a CNN-GRU and a GRU with attention pooling, all tuned in the same way (Table~\ref{tab:tunedarch}), gave errors in the range of the untuned GRU. Tuning lowered the error clearly only on HUST (P2 @@t31_hust_GRU_tuned_P2@@ against @@arch_hust_GRU_P2@@ untuned) and increased it under P3 on MATR (@@t31_matr_GRU_tuned_P3@@ against @@arch_matr_GRU_P3@@) and XJTU (@@t31_xjtu_GRU_tuned_P3@@ against @@arch_xjtu_GRU_P3@@). This is consistent with an inner validation error that is an imprecise guide to held-out-group error. The attention GRU on XJTU shows the same pattern: tuning lowered its P2 error from @@t31_xjtu_AttnGRU_P2@@ to @@t31_xjtu_AttnGRU_tuned_P2@@ and raised its P3 error from @@t31_xjtu_AttnGRU_P3@@ to @@t31_xjtu_AttnGRU_tuned_P3@@. The temporal error of the three variants remained high on MATR, HUST and XJTU (for the CNN-GRU @@t31_matr_CNNGRU_tuned_PT@@, @@t31_hust_CNNGRU_tuned_PT@@ and @@t31_xjtu_CNNGRU_tuned_PT@@ after tuning) and was lowest on TJU (@@t31_tju_CNNGRU_tuned_PT@@).
+
+The LSTM, the TCN, the window MLP and the transformer were tuned in the same way, with similar results. Single errors changed in both directions by up to several points (window MLP on TJU under P3: @@arch_tju_WinMLP_P3@@ untuned, @@t31_tju_WinMLP_tuned_P3@@ tuned), but P3 stayed above P2 for every variant on MATR, XJTU and TJU. On HUST the temporal error remained high for the LSTM (@@t31_hust_LSTM_tuned_PT@@) and low for the TCN (@@t31_hust_TCN_tuned_PT@@) and the window MLP (@@t31_hust_WinMLP_tuned_PT@@). The transformer did not improve either, with a P3 error of @@t31_xjtu_TRF_tuned_P3@@ against @@arch_xjtu_TRF_P3@@ untuned on XJTU and @@t31_matr_TRF_tuned_P3@@ against @@arch_matr_TRF_P3@@ on MATR; only on TJU was it lower (@@t31_tju_TRF_tuned_P3@@ against @@arch_tju_TRF_P3@@).
+
+The pooled perceptron of the main experiments (fixed settings, no window) changed more under tuning. Its P3 error decreased on XJTU from @@xjtu_MLP_P3@@ to @@t31_xjtu_MLP_tuned_P3@@ and on HUST from @@hust_MLP_P3@@ to @@t31_hust_MLP_tuned_P3@@, and it increased on MATR from @@matr_MLP_P3@@ to @@t31_matr_MLP_tuned_P3@@ and on TJU from @@tju_MLP_P3@@ to @@t31_tju_MLP_tuned_P3@@. This comparison combines tuning with differences in the training schedule (Section~\ref{sec:res_neural}), so it indicates the sensitivity of a small network to its settings and not the effect of tuning alone. The order of the questions again depended on the dataset: the temporal error of the tuned perceptron was @@t31_xjtu_MLP_tuned_PT@@ on XJTU and @@t31_hust_MLP_tuned_PT@@ on HUST.
+
+\begin{table}[!tb]
+\caption{RMSE (\% SOH) of tuned networks (GRU, LSTM, TCN, window MLP, CNN-GRU, GRU with attention, transformer, pooled MLP) and of the untuned CNN-GRU and GRU with attention under P2, P3 and the temporal split. Seed 0 of the tuning run.}
+\label{tab:tunedarch}
+\centering
+\fitcol{tables/tuned_arch.tex}
+\end{table}
+
+With F2 inputs (voltage at fixed charge-capacity checkpoints) a GRU had the lowest error on HUST under all three questions (P3 @@f2n_hust_GRU_P3@@ against @@f2n_hust_LightGBM_P3@@ for LightGBM and @@f2n_hust_Ridge_P3@@ for ridge regression) and the lowest temporal error on XJTU (@@f2n_xjtu_GRU_PT@@ against @@f2n_xjtu_LightGBM_PT@@), but a higher P3 error than LightGBM on XJTU (@@f2n_xjtu_GRU_P3@@ against @@f2n_xjtu_LightGBM_P3@@) and on MATR (@@f2n_matr_GRU_P3@@ against @@f2n_matr_LightGBM_P3@@). The order of the models changed with the input as it did with the question (Table~\ref{tab:f2net}).
+
+\begin{table}[!tb]
+\caption{RMSE (\% SOH) with F2 inputs for ridge regression, LightGBM and a GRU under P2, P3 and the temporal split (rows with an F2 feature vector).}
+\label{tab:f2net}
+\centering
+\fitcol{tables/f2_networks.tex}
+\end{table}
+
+Two findings of Section~\ref{sec:res_neural} remained when the architecture was changed: the difficulty ordering and the dependence of model ranking on the question. One requires qualification. Forecasting was more difficult than a held-out group for LightGBM and the transformer on all four datasets, for the GRU and the LSTM on three, and for the TCN and the window MLP on two (MATR and HUST). The difficulty of a temporal split is therefore a property of a model and a dataset, and not of the question alone; for tuned networks on XJTU it was not stable across seeds. The sample of architectures is small and seed variation limits any single-run ranking, but the statements above about the order of questions held across three seeds in almost every combination.
+
+\subsubsection{Stability of Model Rankings}
+\label{sec:res_rank}
+Across all datasets and regimes (Fig.~\ref{fig:ranking}), @@flips_total@@ combinations of a model pair and a pair of protocols showed a sign change of the RMSE difference (Table~\ref{tab:holmcounts}). After Holm correction, @@holm_total@@ of these remained supported (Table~\ref{tab:holm}). Six involve three model pairs on HUST with tuned hyperparameters (differences of at most 0.16 points), and three involve tree ensembles on XJTU, for example XGBoost against random forest, whose order under P0 is reversed under P3 by up to 2.2 points. None of the @@tju_flips@@ sign changes on TJU (11 groups) remained after correction, and neither did any of those observed on MATR, whether the groups were batches (three groups, too few for the criterion) or charge-rate bins (five groups). The set of supported changes was identical under three other bootstrap seeds (checked before TJU was added).
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_ranking.pdf}
+\caption{Stability of model rankings. (a) For the tabular models, the number of model pairs whose RMSE difference changes sign between two protocols, the number for which both differences have $p<.05$, and the number that remain after Benjamini--Hochberg (BH) and Holm correction. (b) Supported reversals between two questions in the family of 14 models, by dataset, for all models and for the four main models. (c) Filtering of the 1113 pairwise tests of the 14-model family.}
+\label{fig:ranking}
+\end{figure*}
+
+The lower pooled error of ridge regression than of boosted trees under leave-one-batch-out on MATR (Table~\ref{tab:protocol}) is not a supported reversal: boosted trees were more accurate in two of the three held-out batches, and the pooled result is determined by batch~1. With four cells such rank differences can only be described \cite{barua2026}; with 55 to 135 cells and five or more groups they can be tested, and few remain supported. A cell-level bootstrap applied to the same predictions would have identified ridge regression as the best of ridge regression, LightGBM and XGBoost in every resample, which shows why the independent unit should be the group when conclusions concern new groups.
+\begin{table}[!tb]
+\centering
+\caption{Sign changes of the pairwise RMSE difference between two protocols and the number retained by each criterion.}
+\label{tab:holmcounts}
+\scriptsize
+\fitcol{tables/holm_counts.tex}
+\end{table}
+\begin{table}[!tb]
+\centering
+\caption{Ranking changes supported after Holm correction. $\Delta_1$ and $\Delta_2$ are RMSE$_A$ $-$ RMSE$_B$ under the first and second protocol.}
+\label{tab:holm}
+\scriptsize
+\fitcol{tables/holm.tex}
+\end{table}
+
+The @@holm_total@@ of @@flips_total@@ supported changes concern ridge regression and tree ensembles. When the test was repeated with networks, more changes were supported. The family comprised ridge regression, LightGBM, the GRU, the transformer and ten further variants (the LSTM, TCN, window MLP, GRU with window 30, CNN-GRU, GRU with attention, and the GRU, LSTM, TCN and window MLP with tuned hyperparameters; Sections~\ref{sec:res_neural} and~\ref{sec:res_arch}). The independent unit was the cell for P0, P2 and the temporal split and the group for P3, with MATR excluded from P3 because it has only three groups, and Holm correction was applied within each dataset and question (28 to 91 pairs). Of @@g33_tests@@ pairwise tests, @@g33_holm@@ were significant after correction, and @@g33_rev_all@@ pairs changed the sign of their difference between two questions with both questions significant. Many of these pairs involve network variants whose difference on the temporal question is large, notably on HUST and TJU.
+
+Among the four main models (ridge regression, LightGBM, GRU, transformer), @@g33_rev_core@@ changes were supported, on HUST (@@g33_rev_core_hust@@) and XJTU (@@g33_rev_core_xjtu@@). On XJTU the transformer had a lower error than LightGBM under P0 (difference @@g33_xjtu_TRF_LGB_P0@@, interval @@g33_xjtu_TRF_LGB_P0_lo@@ to @@g33_xjtu_TRF_LGB_P0_hi@@, Holm $p=@@g33_xjtu_TRF_LGB_P0_p@@$) and under P2 and the temporal split, but a higher error under P3 (@@g33_xjtu_TRF_LGB_P3@@, @@g33_xjtu_TRF_LGB_P3_lo@@ to @@g33_xjtu_TRF_LGB_P3_hi@@, six groups, $p=@@g33_xjtu_TRF_LGB_P3_p@@$). On HUST the GRU had a lower error than ridge regression under P0 to P3 (@@g33_hust_GRU_Ridge_P0@@ under P0) and a much higher error under the temporal split (@@g33_hust_GRU_Ridge_PT@@, interval @@g33_hust_GRU_Ridge_PT_lo@@ to @@g33_hust_GRU_Ridge_PT_hi@@). In these data, changes in model order were infrequent among tabular models and more frequent when the models differ in how they extrapolate.
+
+Rankings read from pooled errors, or from fewer than about five held-out groups, are not reliable. Among ridge regression and tree ensembles few rankings remained after correction, and those that did were small or confined to tree ensembles. When networks were included, supported changes between questions were found on two of four datasets for the main models.
+
+\subsubsection{Leave-One-Charging-Policy-Out Evaluation}
+\label{sec:res_policy}
+Three batches or five rate bins give few independent groups. To obtain a larger number, each of the 70 charging policies of the MATR files was held out in turn (P3 with @@policy_groups@@ groups). Forty policies were applied to a single cell, so for those groups this is leave-one-cell-out with, in addition, an unseen policy; the largest policy has eight cells. Ridge regression had the lowest pooled error (Table~\ref{tab:policy}: @@policy_ridge_p3@@ against @@policy_lgb_p3@@ for LightGBM and @@policy_xgb_p3@@ for XGBoost), but the difference is not supported. The cluster bootstrap over the 70 policies gives a difference of @@policy_delta@@ points (ridge minus LightGBM) with $p=@@policy_p@@$. None of the @@policy_flips@@ sign changes between protocols has both comparisons significant at $p<0.05$ even without correction, and ridge regression is more accurate than LightGBM in only @@policy_ridge_wins@@ of the 70 policies.
+
+The pooled value reflects a heavy tail: the five policies with the largest errors account for @@policy_top5_lgb@@\% of the squared error of LightGBM but @@policy_top5_ridge@@\% of that of ridge regression, and the median per-policy RMSE is @@policy_med_lgb@@ for LightGBM against @@policy_med_ridge@@ for ridge regression. A ranking by pooled error and a ranking by the typical held-out group disagree. The result also depends on the number of cells in the held-out policy. For the @@pm_multi_n@@ policies with at least three cells, ridge regression had the lower pooled error (@@pm_multi_R@@ against @@pm_multi_L@@ for LightGBM; difference @@pm_multi_d@@, interval @@pm_multi_lo@@ to @@pm_multi_hi@@, which includes zero), whereas for the @@pm_single_n@@ single-cell policies, which are close to leave-one-cell-out, LightGBM was more accurate (@@pm_single_L@@ against @@pm_single_R@@; difference ridge minus LightGBM @@pm_single_d@@, interval @@pm_single_lo@@ to @@pm_single_hi@@). Selecting hyperparameters with inner folds that hold out whole policies lowers the pooled error of LightGBM to @@policy_lgb_tg@@ and of XGBoost to @@policy_xgb_tg@@, close to ridge regression (@@policy_ridge_tg@@).
+\begin{table*}[!t]
+\centering
+\caption{MATR, F1 features: pooled RMSE (\% SOH) for P0, P2 and leave-one-charging-policy-out (P3, 70 groups), with group-held-out inner tuning, and the distribution of the P3 error over policies.}
+\label{tab:policy}
+\scriptsize
+\fitwide{tables/policy.tex}
+\end{table*}
+
+With a sufficient number of independent groups, the pooled advantage of a linear model on MATR was not statistically supported, and rankings by pooled error and by typical group disagreed; per-group errors should therefore be reported.
+
+
+\subsubsection{Effect of the Hyperparameter-Selection Scheme}
+\label{sec:res_tuning}
+Table~\ref{tab:tuning} compares fixed hyperparameters with two nested schemes under P3, using four different seeds for the inner search. Holding out groups in the inner folds lowered the error in the cases where the inner scheme mattered most. For XGBoost on XJTU the pooled RMSE was @@xjtu_xgb_default@@ with fixed settings, @@xjtu_xgb_cell@@ (standard deviation over inner seeds, SD, @@xjtu_xgb_cell_sd@@) with cell-held-out inner folds and @@xjtu_xgb_grp@@ (SD @@xjtu_xgb_grp_sd@@) with group-held-out inner folds. For LightGBM on MATR with charging-rate bins the values were @@crate_lgb_default@@, @@crate_lgb_cell@@ and @@crate_lgb_grp@@, which brings LightGBM to the level of ridge regression (@@crate_ridge@@). The leading model changed with the inner seed in two configurations (MATR with charge-rate bins and XJTU, group-held-out inner folds). The effect is not uniform: LightGBM on XJTU did not benefit, and on TJU, with one inner seed, group-held-out inner folds did not help either (LightGBM @@sxt_tju_LightGBM_default@@ with fixed settings, @@sxt_tju_LightGBM_cell@@ with cell-held-out and @@sxt_tju_LightGBM_grp@@ with group-held-out inner folds).
+
+Tuning with cell-held-out inner folds also benefits the protocols unequally (Table~\ref{tab:tunprot}). Relative to fixed hyperparameters it lowered the LightGBM error by @@tune_matr_LightGBM_P0@@\% under P0 but by only @@tune_matr_LightGBM_P3@@\% under P3 on MATR, and on XJTU by @@tune_xjtu_LightGBM_P0@@\% under P0 while increasing it by @@tune_xjtu_LightGBM_P3@@\% under P3. On TJU, tuning lowered the LightGBM error by @@tune_tju_LightGBM_P0@@\% under P0 and by @@tune_tju_LightGBM_P2@@\% under P2 but raised it by @@tune_tju_LightGBM_P3@@\% under P3, whereas the XGBoost error fell under all three protocols (by @@tune_tju_XGBoost_P3@@\% under P3). Gains obtained under random folds carry over only partly to held-out groups (and not at all for XJTU), and the gap between protocols can widen when hyperparameters are tuned.
+\begin{table*}[!t]
+\centering
+\caption{P3 pooled RMSE (\% SOH): fixed hyperparameters and nested selection; mean (SD) over four inner-search seeds.}
+\label{tab:tuning}
+\scriptsize
+\fitwide{tables/tuning.tex}
+\end{table*}
+
+\begin{table}[!tb]
+\centering
+\caption{Change in pooled RMSE (\%) from fixed to nested-tuned hyperparameters (cell-held-out inner folds, F1). P0 and P2 average two repetitions, P3 one run.}
+\label{tab:tunprot}
+\scriptsize
+\fitcol{tables/tuning_by_protocol.tex}
+\end{table}
+
+The inner-fold scheme is an evaluation choice and should be reported; tuning under random folds can widen the gap between protocols.
+
+\subsubsection{Selection on the Reported Folds and Preprocessing}
+\label{sec:res_selection}
+Two further internal threats were measured directly. The first is the selection of hyperparameters as the single configuration with the lowest pooled error on the folds that are subsequently reported, which gives an optimistic result relative to nested selection. For one repetition of each protocol, every grid configuration was trained on every outer fold. The optimism, defined as the relative reduction of the pooled error when selection uses the reported folds instead of the nested scheme with cell-held-out inner folds, was negligible under random folds (median @@opt_P0_med@@\%, maximum @@opt_P0_max@@\%) and small under cell-disjoint folds (median @@opt_P2_med@@\%, maximum @@opt_P2_max@@\%). Under held-out groups it was small on MATR (at most @@opt_matr_P3_max@@\%) and HUST (at most @@opt_hust_P3_max@@\%) but reached @@opt_P3_max@@\% on XJTU (Table~\ref{tab:selection}), where XGBoost gave @@opt_xjtu_xgb_nested@@ with nested selection and @@opt_xjtu_xgb_sel@@ with selection on the reported batches.
+
+With two repetitions of P0 and P2 (a second partition) and with TJU added, the picture was the same. The optimism under random folds had a median of @@sx_P0_med@@\% and a maximum of @@sx_P0_max@@\%, and under cell-disjoint folds @@sx_P2_med@@\% and at most @@sx_P2_max@@\% (@@sx_reps_P2_max_rep0@@\% in the first partition, @@sx_reps_P2_max_rep1@@\% in the second). Under held-out groups it reached @@sx_tju_P3_max@@\% on TJU (LightGBM @@sx_tju_lgb_nested@@ with nested selection and @@sx_tju_lgb_sel@@ with selection on the reported groups). A possible explanation is that optimism arises where the held-out groups differ enough from one another for the best configuration to depend on the group; this was not tested.
+
+The second threat is preprocessing fitted before splitting. When the imputer and standardizer of ridge regression were fitted on all rows instead of the training rows, the pooled RMSE changed by at most @@prep_max_abs@@ points (@@prep_max_where@@) and by at most @@prep_second@@ points in every other setting; tree ensembles are invariant to monotone feature scaling. For the GRU, fitting the imputer and the input and target scaling on all rows changed the RMSE by @@pp_min@@ to @@pp_max@@ points under P2 and P3 on XJTU and TJU (for example @@pp_tju_P3_train@@ to @@pp_tju_P3_all@@ for TJU under P3), which lies within the seed-to-seed spread of Section~\ref{sec:res_arch}. Simple preprocessing fitted before splitting was not material for these models and features, in contrast to hyperparameter selection.
+\begin{table*}[!t]
+\centering
+\caption{P3 pooled RMSE (\% SOH): fixed hyperparameters, nested selection and selection on the reported folds. Optimism is the relative reduction from nested selection with cell-held-out inner folds to selection on the reported folds.}
+\label{tab:selection}
+\scriptsize
+\fitwide{tables/selection.tex}
+\end{table*}
+
+Selecting hyperparameters on the reported folds had little effect under random folds but overstated held-out accuracy by tens of percent in some cases where the held-out groups were heterogeneous; fitting simple preprocessing on all rows had no material effect here.
+
+
+Overall, the internal-validity experiments indicate that the error reported for a design is specific to the question that the design poses. The change in error between random folds and held-out groups was large for LightGBM and small for ridge regression. Forecasting was more difficult than estimating a held-out group for LightGBM on every dataset and, depending on architecture and dataset, for networks. Early rows of the target cell and the fine-tuning schedules improved the error clearly on one dataset only, and changes in the order of tabular models between protocols rarely remained after correction. Selecting hyperparameters on the reported folds overstated held-out accuracy in some cases. These findings are limited to the models, features and 60:40 proportion examined, and some explanations remain incomplete, namely the residual temporal error on TJU and the effect of the offset on long-lived MATR cells. They lead to the next question, which is whether the label and the inputs from which the error is computed are what they appear to be.
+
+\subsection{Construct Validity}
+\label{sec:construct}
+Construct validity concerns the quantities from which the error is computed. Two are examined: the capacity reference that defines the label, and the input features, some of which can encode the label.
+
+\subsubsection{Label Reference and Capacity-Derived Inputs}
+\label{sec:res_label}
+Capacity-based SOH is the ratio of a measured capacity to a reference capacity, and reference performance tests are not always available in public datasets. A widely used benchmark platform states that ``since the RPT results are not always available in the public datasets, we turn to predict the ratio of observed discharge capacity to nominal capacity'' \cite{zhang2024}. The choice of the nominal capacity affects both the label and the reported error in percentage points. Outside the laboratory, an audit of 1,114 vehicles from five manufacturers over 375 days reported that real capacity differences exist ``within every model'' and that ``384 vehicles do not expose SOH at all'' \cite{park2026}. That work is a preprint, and its authors declare an affiliation with the company that operates the telematics platform that supplied the data \cite{park2026}; it is cited here as an indication that the reference itself can be contested and not as a measured effect size.
+
+Table~\ref{tab:coupling} shows the effect of adding the charge capacity of the cycle (F3). For LightGBM on MATR the error under random folds decreased from @@matr_lgb_f1_p0@@ to @@matr_lgb_f3_p0@@. On HUST the charge capacity and the discharge capacity of the same cycle differ by a standard deviation of @@hust_qchg_sd_mAh@@\,mAh, so that the label is almost contained in the input. With F3 the protocol had little influence on the error of ridge regression. A study that reports a small error should therefore state whether any input is a measure of capacity.
+
+The definition of the label also changes the error (Table~\ref{tab:labels}). On TJU, the reference label increased the LightGBM error in the same way, from @@lab_tju_LightGBM_rated_P0@@ to @@lab_tju_LightGBM_ref_P0@@ under P0 and from @@lab_tju_LightGBM_rated_P3@@ to @@lab_tju_LightGBM_ref_P3@@ under P3. On HUST, dividing by the median capacity of the first cycles instead of the rated capacity increased the LightGBM error under random folds from @@hust_lgb_rated_p0@@ to @@hust_lgb_ref_p0@@ and the ridge error from @@hust_ridge_rated_p0@@ to @@hust_ridge_ref_p0@@. A possible explanation is that the rated label contains the spread in initial capacity between cells, which the features predict; this was not tested.
+
+Dividing by a different nominal capacity also rescales the label. The error in percentage points is then rescaled by the ratio of the two capacities, exactly for ridge regression with a fitted intercept and approximately for tree ensembles, while the underlying capacity predictions are unchanged. Errors from different studies are comparable only if the reference capacity is stated. The coupling table was produced in a separate run with a different random partition, so its F1 values differ slightly from those of Table~\ref{tab:protocol}.
+\begin{table}[!tb]
+\centering
+\caption{RMSE (\% SOH) with F1 (left) and F3 = F1 + charge capacity (right); P3a is leave-one-group-out.}
+\label{tab:coupling}
+\scriptsize
+\fitcol{tables/coupling.tex}
+\end{table}
+\begin{table}[!tb]
+\centering
+\caption{RMSE (\% SOH) under the rated label (left) and the reference label (right), fixed hyperparameters, F1.}
+\label{tab:labels}
+\scriptsize
+\fitcol{tables/labels.tex}
+\end{table}
+
+
+The effect of a capacity-derived input is not general. On XJTU the charge capacity tracks the label closely in batches 1 to 5 (correlation at least @@qb_corr_min_1to5@@) but not in batch 6 (correlation @@qb_corr_6@@, charge capacity on average @@qb_diff_6@@\,Ah below the label). Adding it (Table~\ref{tab:f3xjtu}) lowered the LightGBM error under random folds from @@f3x_LightGBM_F1_P0@@ to @@f3x_LightGBM_F3_P0@@ but increased it under held-out batches from @@f3x_LightGBM_F1_P3@@ to @@f3x_LightGBM_F3_P3@@ (ridge regression: @@f3x_Ridge_F1_P3@@ to @@f3x_Ridge_F3_P3@@).
+
+A third dataset behaves differently. On TJU the charge capacity of the cycle correlates @@f3t_corr@@ with the label, and adding it lowered the LightGBM error under P0 (@@f3t_LightGBM_F1_P0@@ to @@f3t_LightGBM_F3_P0@@) and under P3 (@@f3t_LightGBM_F1_P3@@ to @@f3t_LightGBM_F3_P3@@), whereas the P3 error of ridge regression rose slightly (@@f3t_Ridge_F1_P3@@ to @@f3t_Ridge_F3_P3@@). In contrast to XJTU, the capacity-derived input therefore reduced the held-out-group error of the boosted models on TJU.
+
+An input that encodes the label in the training groups can mislead in a held-out group in which that relation does not hold. Batch 6 simulates the cycling of a geosynchronous satellite battery, with ``discharging at a constant current of 0.667C'' for a duration that varies between 5 and 72 minutes according to the dataset documentation \cite{wang2024}, so the charge that precedes a capacity test need not restore the full capacity. The charge records are consistent with this explanation. The deficit of the charge capacity relative to the label (label minus charge capacity) averaged @@bv_def6@@\,Ah in batch 6 and at most @@bv_def13@@\,Ah in absolute value in batches 1 to 3. Within batch 6 the deficit was strongly rank-correlated with the voltage at the start of the charge (Spearman @@bv_rho6@@; the voltage varied with a standard deviation of @@bv_sd6@@\,V, against at most @@bv_sd13@@\,V in batches 1 to 3), which indicates that the cells entered the charge only partly discharged. Batch 4, which also contains partial discharges, showed the same pattern at a smaller scale (mean deficit @@bv_def4@@\,Ah, Spearman @@bv_rho4@@). This analysis does not identify the cause of the incomplete discharge.
+\begin{table}[!tb]
+\centering
+\caption{XJTU and TJU: pooled RMSE (\% SOH) with F1 (left) and with F3 = F1 plus charge capacity (right).}
+\label{tab:f3xjtu}
+\scriptsize
+\fitcol{tables/f3xjtu.tex}
+\end{table}
+
+A small error cannot be interpreted without the reference capacity and the list of inputs, and a capacity-derived input can reduce the error under one protocol and increase it under another.
+
+Overall, the label reference and a capacity-derived input each changed the error, in some cases by more than the difference between models. The error in percentage points cannot be compared between studies without the reference capacity, and an input that encodes capacity can reduce the error under one protocol and increase it under another. The explanation for the XJTU batch-6 result rests on the start voltage of the charge records and not on the discharge records of the preceding cycles, and the effect of the label reference on HUST was not explained. These findings lead to the question of whether the error carries over beyond the data used here.
+
+\subsection{External Validity}
+\label{sec:external}
+External validity concerns whether the error carries over to other cells, conditions and settings. Three aspects are considered: the distance of the held-out data from the training data, the dependence of conclusions on the feature set, and the difference between laboratory and field conditions, which the present data cannot measure.
+
+\subsubsection{Distance of Held-Out Data from the Training Data}
+\label{sec:res_support}
+It was examined whether the effect of the protocol is related to the distance of the evaluation data from the training data (Fig.~\ref{fig:distance}), in the spirit of the ``area of applicability'' of a model, the area ``for which the cross-validation error of the model applies'' \cite{meyer2021}. Each evaluation row received a distance ratio computed from the features only, namely its mean distance to the ten nearest training rows divided by the median of the same quantity over reference training rows. Rows were binned by terciles of this ratio over the P3 rows of each dataset. Table~\ref{tab:support} reports the difference in RMSE between ridge regression and LightGBM per bin, with intervals from 1000 cluster-bootstrap resamples over cells.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_distance.pdf}
+\caption{Distance of the evaluation rows from the training rows. (a)--(c) Empirical distribution of the distance ratio $r$ (mean distance to the ten nearest training rows divided by the median of the same quantity for reference training rows; features only) of the held-out rows under P0, P2 and P3. (d)--(f) Pooled RMSE of LightGBM (solid) and ridge regression (dashed) in terciles of $r$ for each protocol; the thresholds are fixed from the P3 rows.}
+\label{fig:distance}
+\end{figure*}
+
+Under P3 on MATR and HUST, the difference changes in the same direction with distance. On HUST, P2 and P3 give nearly the same values bin by bin, which is expected because the HUST groups are not distinct conditions, so that P3 differs little from P2 by design. On MATR, P2 and P3 differ within the same distance bin. For P0, the rows with the largest distance still favor LightGBM, which suggests that the presence of the cell in the training data has an influence beyond feature distance. The sign of the effect also depends on the dataset: on XJTU, ridge regression degrades most in the farthest bin. On TJU, ridge regression was less accurate than LightGBM in every bin under all three protocols, and under P0 the difference grew from @@sup_tju_P0_near@@ points in the nearest bin to @@sup_tju_P0_far@@ in the farthest.
+
+With a Mahalanobis distance instead of the nearest-neighbor distance the HUST and XJTU patterns were the same (for example HUST under P3 @@mh_hust_P3_0@@, @@mh_hust_P3_1@@ and @@mh_hust_P3_2@@ in the three bins), but MATR under P3 was not: the difference between ridge regression and LightGBM was @@mh_matr_P3_0@@, @@mh_matr_P3_1@@ and @@mh_matr_P3_2@@ in the three bins against @@kn_matr_P3_0@@, @@kn_matr_P3_1@@ and @@kn_matr_P3_2@@ with the nearest-neighbor distance, so the trend with distance on MATR depends on the measure. Feature distance therefore provides only a partial account.
+\begin{table*}[!t]
+\centering
+\caption{RMSE$_\mathrm{Ridge}-$RMSE$_\mathrm{LightGBM}$ (points of SOH) by distance bin, with 95\% cluster-bootstrap intervals; negative values favor ridge regression.}
+\label{tab:support}
+\scriptsize
+\fitwide{tables/support.tex}
+\end{table*}
+
+Distance in feature space accounts for part of the protocol effect but not for all of it.
+
+\subsubsection{Charge-Curve Features}
+\label{sec:res_curve}
+Replacing F1 by F2 (Table~\ref{tab:curve}) alters some conclusions. On MATR, LightGBM was more accurate than ridge regression under all three protocols (P3: @@curve_matr_LightGBM_P3@@ against @@curve_matr_Ridge_P3@@), whereas with F1 the pooled P3 error of ridge regression was lower. On HUST the F2 features were less informative (errors of 2.7 to 4.2 points), and the order of random forest and ridge regression changed between P0 and P3; this is the only supported ranking change with F2 (Holm, @@curve_holm@@ pair).
+
+With tuned hyperparameters (ridge regression and LightGBM, one partition for P2, P3 as before), the MATR conclusion was unchanged (P3: LightGBM @@f2t_matr_LightGBM_P3_tuned@@ against @@f2t_matr_Ridge_P3_tuned@@ for ridge regression). On HUST, however, tuning reversed the order of the two models: LightGBM was then more accurate than ridge regression under P2 (@@f2t_hust_LightGBM_P2_tuned@@ against @@f2t_hust_Ridge_P2_tuned@@) and P3 (@@f2t_hust_LightGBM_P3_tuned@@ against @@f2t_hust_Ridge_P3_tuned@@), whereas with default settings it was less accurate (@@f2t_hust_LightGBM_P3_default@@ against @@f2t_hust_Ridge_P3_default@@ under P3). A comparison of models does not necessarily transfer from one feature set to another.
+\begin{table}[!tb]
+\centering
+\caption{Pooled RMSE (\% SOH) with charge-curve features F2, fixed hyperparameters.}
+\label{tab:curve}
+\scriptsize
+\fitcol{tables/curve.tex}
+\end{table}
+
+Conclusions about model families are conditional on the feature set.
+
+\subsubsection{Laboratory Versus Field Conditions}
+\label{sec:res_field}
+Pozzato \textit{et al.} analyzed one year of field data from an electric-vehicle pack and concluded that laboratory data collected at constant temperature are a weak basis for robust SOH estimators \cite{pozzato2023}. A comparison of six evidence sources, from controlled cycling to fleet SOH data, reported that ``battery performance metrics are conditional on the duty pattern that generated them'' \cite{zhao2026}, and a recent review notes that ``the vast majority of work still relies on standardized test data obtained under laboratory conditions'' \cite{ma2026}. Most laboratory datasets are said to ``fail to represent real-world EV operation conditions'' \cite{gong2025}, and real-world datasets carry biases of their own, since ``data sparsity and imbalance in real-world datasets can exacerbate biases'' \cite{gong2025}. All five datasets used here are laboratory data, so none of these effects can be measured with them.
+
+Held-out evaluation on laboratory data does not by itself provide evidence of field performance, and this could not be tested here.
+
+
+Overall, distance in feature space accounted for part of the protocol effect but not for all of it, conclusions about model families depended on the feature set, and the laboratory data give no indication of how the results carry over to field duty. The distance analysis uses two simple measures that disagree about the trend on MATR under P3, and TJU does not enter the charge-curve analyses. A claim about transfer beyond the data therefore requires evidence from the target setting, such as field data with independent reference capacities.
+
+\section{Implications for Model Families}
+\label{sec:families}
+Many recent studies present a new architecture as their contribution \cite{aud24,aud26,aud25}. An improvement over baselines can be interpreted only if the baselines were evaluated on the same held-out unit, with the same tuning effort and the same label. This section relates the designs in Table~\ref{tab:practice} to the measurements reported above. The argument concerns what the evaluations can support and makes no statement about the accuracy of any of the cited models.
+
+Transformer and state-space models are evaluated on small sets of cells \cite{aud24,aud26}. With a handful of cells, the number of independent training units equals the number of cells, irrespective of the number of cycles. In the present experiments, a GRU and a small transformer were trained on windows of ten cycles (Section~\ref{sec:res_neural}). Their error followed the same difficulty ordering as that of the pooled models, and their rank relative to LightGBM and ridge regression changed with the question; on XJTU, for example, the transformer was more accurate than LightGBM under P0 and P2 and less accurate under P3. For the GRU and the transformer, the forecast of the later life of a cell had a higher error than held-out groups in seven of eight combinations of network and dataset.
+
+Further architectures and three seeds (Section~\ref{sec:res_arch}) indicate that this last result depends on the architecture, since a window MLP and a TCN forecast considerably more accurately on HUST and TJU. The architectures are generic and use F1 features, so they do not represent architectures designed for a specific dataset. A small perceptron with fixed settings behaved similarly: on XJTU it ranked fourth of five models under P0 (@@xjtu_MLP_P0@@) and last under P3 (@@xjtu_MLP_P3@@). Studies that evaluate NASA splits of different size \cite{aud26} illustrate the extent to which the choice of split changes the task.
+
+Transfer settings often fine-tune the model on a share of the target cell \cite{aud25,aud49}, train on one cell and test on others at other conditions \cite{aud31}, or train on many cells and test on others \cite{aud53}. The P0 results show the benefit of having the evaluated cell in the training data: for LightGBM on MATR the error was @@matr_LightGBM_P0@@ under P0 and @@matr_LightGBM_P3@@ when whole batches were held out. A fine-tuning claim should therefore be accompanied by a baseline that receives the same share of target-cell data. In the calibration experiment, adding early rows of the target cell to a pooled LightGBM or ridge model changed the error very little (Section~\ref{sec:res_calibration}), so that a reported gain from fine-tuning would have to come from a model that uses those rows differently from concatenation. GRU fine-tuning was tested with four schedules and a per-cell offset, and none of them improved the error consistently (Section~\ref{sec:res_schedules}).
+
+A physics-informed network such as the one in \cite{wang2024} takes extracted features as input (``the features we extracted''). Whether the physical structure helps depends on the feature set against which it is compared. With charge-curve features at fixed capacity checkpoints, for example, the ranking of ridge regression and LightGBM on MATR changed (Section~\ref{sec:res_curve}). A claim for a physically motivated input should therefore be tested against a conventional feature set under the same protocol.
+
+Augmentation and simulation increase the number of training cycles \cite{aud21,aud29} but not the number of training cells. If the cell is the independent unit, the effective sample size is unchanged, and the test cells must be kept out of the generator as well as out of the predictor.
+
+A cross-cell design in which the training set of each fold contains the data of 7 NMC111 cells or 13 NMC811 cells \cite{aud42} operates at a scale at which unit-level inference is possible but imprecise, because the number of independent units equals the number of cells; the precision at this scale was not quantified. In the same study, several NMC811 cells that ``did not reach their EoL'' were excluded from the training data. This constitutes a selection of cells that should be reported together with the result.
+
+The selection scheme was relevant for every model family tested. On XJTU, selecting hyperparameters on the reported batches lowered the pooled P3 error of each of the four models relative to nested selection, by up to @@opt_P3_max@@\% (Table~\ref{tab:selection}). Studies that tune on shuffled validation cycles of the training cells \cite{aud32,aud36} have a related exposure, which was not tested.
+
+Overall, the designs of the studies cited in Table~\ref{tab:practice} are compatible with several of the measured effects, but nothing in this section tests the cited models. The measurements suggest that a claim for a model family should be accompanied by a baseline that is evaluated on the same held-out unit, with the same tuning effort and the same label, and that the benefit of a design such as an architecture, a fine-tuning scheme, a physical structure or augmentation should be judged under the question that the design is meant to answer.
+
+\section{Input Signals and Associated Threats}
+\label{sec:signals}
+The threats discussed above affect the signal from which SOH is estimated in different ways. The studies of Table~\ref{tab:practice} are therefore grouped by input signal, and the exposure that follows from their designs and from the present experiments is stated for each group.
+
+Features from the charge voltage curve or from incremental capacity are common \cite{aud17,aud12}. Their exposure is mainly a matter of construct validity, since the way in which features are derived from the curve determines whether the input encodes capacity, and in the present experiments the model ranking depended on the feature set (Section~\ref{sec:res_curve}). A study that reports one feature set supports a statement about that feature set only.
+
+Estimation from a short random segment of constant-current charging \cite{aud31}, from a super-short segment \cite{aud54} or from partial charging data \cite{aud53} is attractive for deployment. These designs introduce an additional source of shift between training and test cells, namely the position and length of the segment. One of the studies attributes the ``outstanding performance'' of earlier methods to ``the same cycling condition between the trained and test cells'' \cite{aud31}, so that the cycling condition should be held out as well as the cell.
+
+Impedance-based studies use few cells \cite{aud42,aud46,aud52}. The cell is therefore the independent unit, the number of units is small, and the decision about which cells enter training or testing has a large influence on the result \cite{aud42,aud46}. One of these studies tests on new cells at temperatures that also occur in training ``even when they were under identical environmental conditions as some of the training ones'' \cite{aud52}.
+
+Pack measurements \cite{aud37,aud57} and field data \cite{pozzato2023,park2026,zhao2026} differ from laboratory cells in the origin of the label. When no reference capacity test is available, the label is an estimate, and the error against it is not an error against a measured capacity; a fleet audit reports that ``384 vehicles do not expose SOH at all'' \cite{park2026}. Accuracy at the cell level need not carry over to packs, since ``SOH estimation with high accuracy at the cell level may not hold at the battery pack level'' \cite{gong2025}. The present experiments cannot address field data or packs (Section~\ref{sec:res_field}), but they indicate that the label reference alone changes the error (Section~\ref{sec:res_label}).
+
+Overall, the input signals differ in how they expose the threats. Charge-curve features are exposed mainly through construct validity, short-segment and impedance designs through shift between cells and through small numbers of units, and pack and fleet data through the origin of the label. These statements rest on the designs and on the experiments with charge-curve features, and the other signals were not measured here.
+
+\section{Scope of the Evidence}
+\label{sec:discussion}
+The preceding sections examined each threat separately. This section collects what the measurements support and what they do not.
+
+The measurements support five findings, each of which concerns the correspondence between the question and the reported error. The error of a flexible model depends strongly on the question: for LightGBM the error under held-out batches was a factor of @@matr_LightGBM_ratio_P3_P0@@ (MATR), @@xjtu_LightGBM_ratio_P3_P0@@ (XJTU), @@tju_LightGBM_ratio_P3_P0@@ (TJU) and @@hust_LightGBM_ratio_P3_P0@@ (HUST) times that under random folds, whereas for ridge regression it depended much less on the question, which is consistent with the limited capacity of the model to represent a cell. A small gap between questions is therefore not a sign of a safe design.
+
+A temporal split poses a different question from a held-out cell and, for LightGBM on all datasets and for networks depending on architecture and dataset, a more difficult one. Avoiding temporal leakage does not make it a safe design, because the model must then extrapolate along a degradation trajectory that other cells could have supplied. In the same way, early rows of the target cell contributed little or nothing in most settings, whatever the schedule, whereas late-life rows of other cells did contribute; the exception was XJTU, where a per-cell offset lowered the error. The early record of a cell was more useful as a reference for its own inputs than as training rows, since self-referenced inputs lowered the LightGBM error under the temporal question and under P3 on MATR, XJTU and TJU. Where a design trains on the early life of the cells on which it is tested, the relevant quantity appears to be the coverage of the degradation range in the training pool.
+
+After accounting for the number of independent groups and for multiple comparisons, supported changes in the order of two tabular models between protocols were few (@@holm_total@@ of @@flips_total@@), small on HUST and concentrated among tree ensembles on XJTU. Among ridge regression, LightGBM, a GRU and a transformer, @@g33_rev_core@@ changes between questions were supported, on HUST and XJTU, and the direction of a change in order could not be predicted from the protocol label alone. Finally, the way in which hyperparameters were selected, the reference of the label and the presence of an input that encodes capacity each changed the error, in some cases by more than the difference between models.
+
+These findings are consistent with the qualitative position of \cite{sohail2026} and \cite{rizanov2026} that errors depend on the protocol. On a larger number of cells they are consistent with what four NASA cells indicated, namely that random folds mostly measure interpolation \cite{barua2026,le2026}, and with the direction reported for random against group-wise folds \cite{maher2025} and for capacity-equivalent inputs \cite{erdogan2026}. The difficulty of forecasting is consistent with the statements of reviews that models trained on a snapshot of battery aging cannot be assumed to extrapolate \cite{gong2025,shan2025}. The additional observation is that the usual expectation, in which error increases with decreasing target information and temporal splits are the safe choice, holds only in part.
+
+No claim is made that random cycle-level splits are common in the literature. In Table~\ref{tab:practice}, the passages that were read often do not settle whether cycles of one cell reach both the training and the test set (the entries marked ``order not stated'' and the proportional splits of pooled records), so the map cannot indicate how common such splits are. The only prevalence estimate known to the authors comes from a concurrent, unreviewed survey of 50 highly cited open-access papers, in which 22 split cycles of the same cell between training and test and 20 held out cells \cite{erdogan2026}; its sample and the present one differ, and neither supports a statement about the field as a whole. P0 is a reference condition, used because \cite{sohail2026} rank random splits as the lowest-rigor protocol. Nor is it claimed that held-out evaluation measures field performance: all five datasets are laboratory data, and the cited field studies \cite{pozzato2023,park2026,zhao2026} point to differences that the present design cannot examine. Finally, the experiments use mostly cycle-level F1 features and a small set of networks; architectures designed for a specific dataset, much longer histories, per-cell adapters beyond a one-parameter offset or other fine-tuning schedules may behave differently under Q2 and Q5, and only a few of these were tested (Sections~\ref{sec:res_schedules} and \ref{sec:res_arch}).
+
+For the reading of reported accuracies, the measurements imply the following. A figure can be interpreted only together with the question it answers, that is, with what the model had seen of the target, the unit that was held out and the number of such units. A small error obtained with an input that encodes capacity does not constitute evidence for a health indicator, and errors from studies with different reference capacities cannot be compared directly. Hyperparameters tuned on the reported folds can overstate the benefit of tuning, whereas tuning on folds that mimic the intended deployment can change which model appears best. Finally, a comparison between models can be assumed to hold for another question only if it was tested there.
+
+\section{Reporting Recommendations}
+\label{sec:recs}
+A reporting checklist is useful only if each item can be traced to an effect that its omission would hide. The lists of \cite{sohail2026} and \cite{rizanov2026} already ask for the dataset, the target definition, the order of preprocessing and the split. Table~\ref{tab:checklist} adds the items for which the reading of the studies (Section~\ref{sec:practice}) and the experiments (Section~\ref{sec:analysis}) indicate that omission changes the interpretation of a reported error. Each row states what should be reported, what changes if it is missing, with the measured effect where there is one, and the section in which the item is examined. Items 1 to 4 and 9 concern internal validity, items 5 and 6 construct validity, item 10 external validity, and items 7, 8 and 11 the comparison of models. None of the items requires more data than a study already has.
+
+\begin{table*}[!t]
+\caption{Reporting checklist for studies of data-driven SOH estimation. The last column gives the section in which the item is examined.}
+\label{tab:checklist}
+\centering
+\footnotesize
+\begin{tabular}{p{0.03\textwidth}p{0.30\textwidth}p{0.45\textwidth}p{0.10\textwidth}}
+\toprule
+ & Report & Why (what changes if it is missing) & Section \\
+\midrule
+1 & The task: estimation for a cell never seen, forecasting of later cycles of a cell, or calibration with data of the target cell & The tasks answer different questions. The error under random folds, which include cycles of the evaluated cell in training, differed from that under held-out batches by up to a factor of @@matr_LightGBM_ratio_P3_P0@@, and a temporal split gave a still larger error for tree ensembles. Early data of the target cell added little to a pooled model. A study that mixes the tasks cannot be compared with others & \ref{sec:practice}, \ref{sec:res_protocol}, \ref{sec:res_temporal} \\
+2 & The independent unit that is held out (cycle, cell, batch, condition, dataset) and the number of such units & The pooled error describes only the held-out units, and a ranking cannot be tested with fewer than about five groups & \ref{sec:res_protocol}, \ref{sec:res_rank} \\
+3 & Uncertainty computed over that unit, and a correction for the number of model comparisons & Cell-level intervals ignore the correlation within a group, and unadjusted comparisons produce many apparent changes in ranking & \ref{sec:res_rank}, \ref{sec:res_policy} \\
+4 & The hyperparameter-selection scheme, the unit held out in the inner folds, and whether the reported folds were used for selection & Selection on the reported folds lowered the apparent error by up to @@opt_P3_max@@\% in one case, and inner folds that hold out cycles do not mimic deployment & \ref{sec:res_tuning}, \ref{sec:res_selection} \\
+5 & The reference capacity, its source, and the error in capacity units when the reference differs from the rated value & The error in percentage points depends on the reference; a per-cell reference changed the error several-fold on HUST & \ref{sec:res_label} \\
+6 & Whether any input is derived from capacity, and results without such inputs & A capacity-derived input removed most of the error on two datasets and increased the held-out-batch error on a third & \ref{sec:res_label} \\
+7 & A simple baseline (for example ridge regression) with the same tuning effort and, for fine-tuned models, the same share of target-cell data & On the largest dataset, the linear baseline was not less accurate than boosting once all 70 policies were held out & \ref{sec:res_policy}, \ref{sec:families} \\
+8 & Results for more than one feature set when a conclusion about model families is drawn & The order of ridge regression and LightGBM depended on the feature set & \ref{sec:res_curve} \\
+9 & Preprocessing fitted on training data only, with seeds, code and the exact partition & The effect of preprocessing fitted before splitting depends on the model, and the partition itself is sometimes not recoverable from the text & \ref{sec:res_selection}, \ref{sec:practice} \\
+10 & The range of operating conditions and the distance of the test data from the training data & Feature distance accounted for part of the protocol effect but not for all of it & \ref{sec:res_support} \\
+11 & For neural models, several seeds and more than one architecture, and the calibration schedule with a per-cell offset baseline & The range of the P3 error over three seeds had a median of @@ss_P3_med@@ points for untuned and @@tss_P3_med@@ for tuned networks but reached @@ss_P3_max@@ and @@tss_P3_max@@ points in single cases, which is comparable to or larger than the differences between neighboring architectures, and the effect of fine-tuning changed sign between datasets & \ref{sec:res_schedules}, \ref{sec:res_arch} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The items do not carry equal weight in the present data. The question and the held-out unit (items 1 and 2) changed the error by up to a factor of @@matr_LightGBM_ratio_P3_P0@@, a capacity-derived input (item 6) removed most of the error on two datasets, the reference capacity (item 5) changed the error several-fold on HUST, and selection on the reported folds (item 4) lowered the apparent error by up to @@opt_P3_max@@\%. In contrast, fitting simple preprocessing on all rows (item 9) had no material effect for the models examined. A study with limited space can therefore reasonably give priority to items 1, 2, 4, 5 and 6.
+
+However, the checklist has limits. It is derived from five public laboratory datasets and from the designs in Table~\ref{tab:practice}, so the items describe what was found to matter there. It does not define thresholds beyond the one used here, namely that rankings under held-out groups were not claimed with fewer than about five groups, and it contains no items for field data, which the present data cannot support. Applying the checklist does not make a design appropriate. It makes the question that the design answers explicit, so that the reported error can be read as an answer to that question.
+
+\section{Limitations}
+\label{sec:limits}
+The conclusions of this review are bounded by the data, the models and the inference, and by the way in which the literature was read. The limitations are grouped accordingly, and the final paragraph states what would reduce them.
+
+The study is based on five public laboratory datasets with at most 135 cells. For protocol P3 there are three to eleven held-out groups, which is few for stable inference, and the HUST groups are formed from cell identifiers and do not represent distinct conditions. The 135 MATR cells include 11 that the published description of 124 cells excludes; the protocol comparison on the 124 cells gave the same picture (Section~\ref{sec:res_protocol}). XJTU labels exist only for cycles with directly measured capacity, and the rated label of TJU is a cell-type reference and not a datasheet value.
+
+The models and features are restricted. Features are cycle-level summaries or charge-curve checkpoints and not full waveforms, and the hyperparameter grids are small. The pooled multilayer perceptron was run with one architecture and fixed hyperparameters. The GRU, LSTM, TCN, window MLP, CNN-GRU and attention GRU were tuned with a grid of six settings and an inner validation set, the transformer with a grid of four and the pooled MLP with a grid of six. The seven architectures and the tuned variants were run with three seeds (for the tuned variants with the hyperparameters of the first run kept, without renewed tuning), whereas the charge-curve runs were run once. The six calibration or fine-tuning schedules and the seven architectures are a small sample, and charge-curve inputs were given to one network only. The temporal-split and calibration experiments use a single 60:40 proportion. TJU enters the protocol, ranking, temporal, calibration, network and selection analyses and, with one inner seed, the tuning analysis, but not the charge-curve analyses, for which no waveform features are available.
+
+Several explanations remain incomplete. Extrapolation beyond the training range was tested by an error split and by a ridge-plus-boosting hybrid; it accounts for the temporal result on HUST, largely on XJTU and partly on MATR, whereas on TJU a drift of the charge features contributes and the remainder is unexplained. The explanation proposed for the offset results was tested and not supported: the offset increases the error of the long-lived MATR cells, which carry half of the late rows, and the reason is not established. The explanation of the XJTU result for charge capacity rests on the start voltage of the charge and not on the discharge records of the preceding cycles. The distance analysis uses two simple measures, which disagree about the trend on MATR under P3, and the Mahalanobis measure was not computed for TJU. In the leave-one-policy-out experiment, 40 of the 70 policies contain a single cell, so that most groups are close to single cells.
+
+Some inferential choices also limit the conclusions. Multiplicity control is applied within each dataset and regime (tabular models) or within each dataset and question (all models), not across datasets or feature sets, and the two families differ in size. The analysis of selection on the reported folds uses two repetitions of P0 and P2 and one partition for P3, and the preprocessing check covers ridge regression and, on two datasets, the GRU.
+
+Finally, the review of Ma \textit{et al.} \cite{ma2026}, which proposes a three-axis evaluation framework for real-vehicle data, was read in full; the framework is described in one section without experiments or definitions of split procedures, so only the concepts are compared. The statements about model families are arguments based on these designs and on the present experiments and are not tests of the cited models.
+
+Overall, the limitations affect the strength of the statements more than their direction. The difficulty ordering held across datasets, with the explained exception of HUST, and the temporal error exceeded the held-out-group error for LightGBM on every dataset. The order of the temporal and held-out-group errors was, however, not stable across seeds for tuned networks on XJTU, and the statements about rankings are conditional on the models, features and 60:40 proportion examined. Three additions would reduce the limitations most: field data with independent reference capacities, which would address external validity; more datasets with distinct conditions and more held-out groups, which would allow rankings under P3 to be tested; and waveform-based inputs evaluated under the same protocol comparison, which would show whether the findings extend beyond cycle-level features.
+
+\section{Conclusion}
+\label{sec:conclusion}
+A reported SOH error answers a question that is defined by what the model has seen of the target and by what it is asked to predict. In this review, five such questions were distinguished, 40 recent studies were mapped onto them, and all five questions were measured on the same rows of five public datasets with 55 to 135 cells. That cell-held-out testing increases the error, and that capacity-equivalent inputs inflate accuracy, had already been indicated by small or concurrent studies \cite{le2026,barua2026,maher2025,erdogan2026}. The contribution of the present work lies in the comparison across questions, with inference at the level of the cell or group.
+
+The results indicate that forecasting the later life of a cell can be more difficult than estimating a new cell, and that early rows of the target cell improved the error clearly on one dataset only, whatever the schedule. Among tabular models, most changes in model order between protocols did not remain after correction, whereas models that differ in kind, such as ridge regression, boosting and networks, showed supported changes between questions. Hyperparameter selection, label reference and capacity-derived inputs each changed the error.
+
+The appropriate evaluation depends on the intended use. An estimator that will be applied to cells of types and conditions present in the training data can be evaluated with held-out cells (Q3). An estimator intended for new cell types or operating conditions should be evaluated with held-out groups (Q4), and the number of groups should be stated, since rankings based on fewer than about five groups could not be tested. An estimator intended to forecast the ageing of cells already in service should be evaluated with a temporal split (Q5), for which extrapolation outside the training range, and not leakage, was the main threat in the present data. When early data of the target cell are used (Q2), the result should be compared with a per-cell offset baseline. In all cases, the question, the held-out unit and its count, the reference capacity, the origin of the inputs and the tuning scheme should be stated. Field data with independent reference capacities remain necessary to determine how far these laboratory results transfer.
+
+\section*{Data and Code Availability}
+All five datasets are public: the NASA Prognostics Center of Excellence battery data set \cite{saha2007}; the MATR data of \cite{severson2019} (\url{https://data.matr.io/1/}); the HUST data of \cite{ma2022} (Mendeley Data, doi:10.17632/nsc7hnsg4s); the XJTU data of \cite{wang2024} (Zenodo, record 10963339); and the TJU data of \cite{zhu2022} (Zenodo, record 6405084). The scripts, fixed random seeds, extracted per-cycle features and result tables used to generate every table and figure are [to be deposited by the authors in a public repository; URL, version and license to be inserted]. Software versions: Python 3.13, scikit-learn 1.9.1, LightGBM 4.7.0, XGBoost 3.4.1, PyTorch 2.15.0.
+
+\section*{Acknowledgment}
+An AI assistant (Claude, developed by Anthropic) was used to write the analysis code, to run and check the computations, and to draft and edit the text of this article. The authors reviewed all results and text, verified every quotation and citation against the cited sources, and take responsibility for the content.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\begin{IEEEbiographynophoto}{[First Author]}
+[Biography to be supplied.]
+\end{IEEEbiographynophoto}
+
+\EOD
+\end{document}

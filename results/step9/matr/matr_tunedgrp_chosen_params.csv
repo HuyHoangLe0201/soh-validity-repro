@@ -1,0 +1,13 @@
+key,alpha,max_depth,n_estimators,learning_rate,min_samples_leaf
+SOH_rated|tuned_grp|P3|Ridge|0,0.01,,,,
+SOH_rated|tuned_grp|P3|Ridge|0,0.01,,,,
+SOH_rated|tuned_grp|P3|Ridge|0,1000,,,,
+SOH_rated|tuned_grp|P3|LightGBM|0,,3,100,0.05,
+SOH_rated|tuned_grp|P3|LightGBM|0,,3,100,0.05,
+SOH_rated|tuned_grp|P3|LightGBM|0,,3,100,0.05,
+SOH_rated|tuned_grp|P3|XGBoost|0,,3,100,0.05,
+SOH_rated|tuned_grp|P3|XGBoost|0,,6,100,0.05,
+SOH_rated|tuned_grp|P3|XGBoost|0,,3,100,0.05,
+SOH_rated|tuned_grp|P3|RandomForest|0,,12,,,50
+SOH_rated|tuned_grp|P3|RandomForest|0,,12,,,50
+SOH_rated|tuned_grp|P3|RandomForest|0,,6,,,50

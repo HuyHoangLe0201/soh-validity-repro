@@ -1,0 +1,5 @@
+model,rmse_5fold,rmse_lobo,increase_pct,pub_5fold,pub_lobo
+LightGBM,2.3,4.629,101.2,2.3,4.629
+Random Forest,2.119,5.071,139.3,2.123,5.08
+XGBoost,2.094,4.589,119.2,2.215,4.651
+CatBoost,2.225,5.072,128.0,2.225,5.072

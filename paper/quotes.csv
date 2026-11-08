@@ -1,0 +1,157 @@
+id,source,quote,used_for
+Q01,sohail2026_mathematics.txt,"Reported results are strongly affected by split design, preprocessing, and differences between training and test conditions",Sohail et al. state that reported results depend on split design and preprocessing
+Q02,sohail2026_mathematics.txt,The evaluation protocol is equally important because it determines what a reported error actually supports,Sohail et al. on the meaning of a reported error
+Q03,sohail2026_mathematics.txt,the table should not be read as a complete comparison of trustworthiness,Sohail et al. caveat on their protocol-stratified table
+Q04,sohail2026_mathematics.txt,we propose the following minimum reporting standard for future battery SOH studies,Sohail et al. propose a reporting checklist
+Q05,sohail2026_mathematics.txt,preprocessing leakage before splitting,Sohail et al. list preprocessing leakage as a source of inflation
+Q06,rizanov2026_batteries.txt,"Rather than proposing a new estimator, this work systematically aggregates and structures existing empirical evidence.",Rizanov et al. aggregate existing evidence
+Q07,rizanov2026_batteries.txt,evidence-maturity judgments rather than pooled quantitative rankings,Rizanov et al. limitation on quantitative comparison
+Q08,rizanov2026_batteries.txt,"Dataset splits should be agnostic to cell, batch, protocol, and time",Rizanov et al. recommendation on splits
+Q09,rizanov2026_batteries.txt,Random splits over cycles from the same cells,Rizanov et al. on same-cell random splits
+Q10,rizanov2026_batteries.txt,de-duplicated classified set of 176 scientific works,Rizanov et al. corpus size
+Q11,park2026_arxiv.txt,exist within every model,Park et al. fleet audit: capacity differences within every model
+Q12,park2026_arxiv.txt,384 vehicles do not expose SOH at all,Park et al. fleet audit: vehicles not exposing SOH
+Q13,pozzato2023_joule.txt,weakness of data collected from constant-temperature laboratory testing when developing robust state-of-health estimators,Pozzato et al. on laboratory testing
+Q14,zhang2024_batteryml.txt,"Since the RPT results are not always available in the public datasets, we turn to predict the ratio of observed discharge capacity to nominal capacity in this study",BatteryML SOH label definition
+Q15,zhang2024_batteryml.txt,"Deep learning models, however, haven't consistently outperformed traditional methods",BatteryML finding on deep learning vs traditional methods
+Q16,le2026_ein.txt,"a 119% performance gap is observed between standard 5-fold cross-validation and LOBO validation, indicating that conventional evaluation overestimates practical accuracy",Le and Nguyen abstract: gap between 5-fold CV and LOBO
+Q17,zhao2026_arxiv.txt,battery performance metrics are conditional on the duty pattern that generated them,Zhao and Traeholt on duty profiles
+Q18,ma2026_energies_abstract.txt,the vast majority of work still relies on standardized test data obtained under laboratory conditions,Ma et al. on laboratory data
+Q20,xjtu_zenodo_description.txt,"A total of 55 batteries were included in this experiment, conducted under 6 different charging and discharging strategies",XJTU dataset size
+Q21,p03_arxiv2309_10014.txt,124 commercial lithium-iron-phosphate (LFP) cells by Severson et al.,Number of cells in the Severson dataset (secondary source)
+Q22,pozzato2023_joule.txt,"analyze one year of 1,655 battery signals",Pozzato et al. field-data scope
+Q23,park2026_arxiv.txt,"an epidemiological study of 1,114 EVs spanning five manufacturers and 375 days",Park et al. fleet audit scope
+Q24,zhao2026_arxiv.txt,"comparing six accessible evidence sources covering controlled cycling, drive-cycle testing, dynamic cycling",Zhao and Traeholt scope
+Q25,sohail2026_mathematics.txt,The literature is organised by learning formulation rather than algorithm family,Sohail et al. organisation
+Q26,rizanov2026_batteries.txt,it proposes a multi-fidelity validation framework that links synthetic and controlled cell-level,Rizanov et al. framework
+Q27,park2026_arxiv.txt,"S.H., K.K., and S.G. are affiliated with Betterwhy Inc., which operates the vehicle telematics monitoring platform used to collect the data analyzed in this study",Park et al. declare an affiliation with the data provider
+Q28,sohail2026_mathematics.txt,"Saha, B.; Goebel, K. Battery Data Set. In NASA AMES Prognostics Data Repository; NASA Ames Research Center: Moffett Field, CA, USA, 2007",Reference text for the NASA battery data set
+Q29,le2026_ein.txt,lithium-ion cells with LiCoO2 cathode chemistry,Chemistry of the NASA cells used by Le and Nguyen
+Q31,sohail2026_mathematics.txt,Random split Interpolation only Lowest,Sohail et al. Table 1 ranks random splits as the lowest rigour
+Q32,kaufman_abstract.txt,leakage is the introduction of information about the data mining target that should not be legitimately available to mine from,Kaufman et al. definition of leakage
+Q33,roberts_abstract.txt,resulting in serious underestimation of predictive error,Roberts et al. on cross-validation that ignores data structure
+Q34,varma_abstract.txt,We have evaluated the validity of using the CV error estimate of the optimized classifier as an estimate of the true error expected on independent data,Varma and Simon examine the CV error of an optimised classifier
+Q35,barua2026_batteries.txt,These four-cell laboratory results show that richer discharge diagnostics can improve represented cell interpolation much more than unseen cell transfer,Barua et al. main result
+Q36,barua2026_batteries.txt,"The true independent unit count is four cells, not 636 cycles",Barua et al. on independent units
+Q37,barua2026_batteries.txt,Nested group-wise tuning did not remove the transfer gap,Barua et al. on nested tuning
+Q38,barua2026_batteries.txt,random-versus-LOCO ranks were uncorrelated,Barua et al. on rank correlation (descriptive)
+Q39,barua2026_batteries.txt,Seven regressors and five predictor sets were evaluated in four NASA cells (636 cycles),Barua et al. design
+Q40,barua2026_batteries.txt,An eight-cell Oxford analysis was limited to an age-only boundary check,Barua et al. Oxford check
+Q41,barua2026_batteries.txt,Cell-cluster bootstrap intervals are no longer used to support general claims.,Barua et al. on inference
+Q42,benabdennour2026_machines.txt,presents a leakage-controlled grouped validation framework for remaining useful life (RUL) and state of health (SOH) prediction,Ben Abdennour abstract
+Q43,le2026_ein.txt,evaluated using 5-fold CV,"Le and Nguyen: the hyperparameter grid (27 combinations, near the default configuration) is evaluated with shuffled five-fold CV"
+Q44,le2026_ein.txt,Comparison with the manufacturer-rated capacity (2.0 Ah),Le and Nguyen nominal capacity check
+Q45,aud53.txt,Published studies on the Severson dataset differ in at least four aspects that materially affect reported numbers,aud53 on heterogeneity of protocols on MATR
+Q46,aud53.txt,cross-paper numerical comparisons should be interpreted as contextual rather than strictly apples-to-apples,aud53 on cross-paper comparison
+Q47,aud53.txt,The remaining cells were divided into 99 training cells and 24 test cells.,aud53 MATR split
+Q48,aud18.txt,Data partitioning is performed at the battery-cell level rather than at the cycle level,aud18 split unit
+Q49,aud30.txt,train/test splits are strictly enforced at the individual cell level,aud30 split unit
+Q50,aud42.txt,a strict cross-cell validation protocol is adopted in which one cell is sequentially designated as the test set,aud42 split unit
+Q51,aud47.txt,Leave One Cell Out (LOCO) validation is the method used where each battery cell is tested separately,aud47 split unit
+Q52,aud47.txt,"NASA: 4 cells, Oxford: 8 cells",aud47 data
+Q53,aud33.txt,"instead of training the model with early data from battery A and testing it with later data, which avoids information leakage from the training set to the test set",aud33 (Wang et al.) rationale for cell-level split
+Q54,aud20.txt,50% of the batteries are used for training and 50% for testing,aud20 split unit
+Q55,aud20.txt,defined as the ratio of the present maximum capacity with respect to the initial maximum capacity,aud20 SOH definition
+Q56,aud25.txt,SoH is defined as the ratio of the current releasable battery charge to its rated capacity,aud25 SOH definition
+Q57,aud25.txt,"Among all nineteen batteries, one is selected as the target battery for testing, and others are used as the source dataset for training.",aud25 split unit
+Q58,aud25.txt,with only 10% data for fine-tuning on a testing battery,aud25 fine-tuning on the test battery
+Q59,aud49.txt,"fine-tuned on 15% data of unknown cells, and the rest 85% data has been used to test the algorithm",aud49 describing a prior work with fine-tuning on the target cell
+Q60,aud28.txt,"under strategy 4, only the first 80% amount of data of each cell is used for ML training while the rest 20% of data is used for test",aud28 temporal split
+Q61,aud28.txt,validated under four training/test data splitting strategies,aud28 four strategies
+Q62,aud22.txt,five-fold cross-validation is performed only on the remaining training/validation batteries,aud22 inner CV by battery
+Q63,aud22.txt,covering 386 batteries,aud22 data
+Q64,aud31.txt,the above outstanding performance is owing to the same cycling condition between the trained and test cells,aud31 condition shift
+Q65,aud24.txt,"data from batteries B0005 and B0006 are used for training, while battery B0007 is reserved for testing",aud24 split
+Q66,aud21.txt,"We use cell 3 for testing purposes, which has 76 cycles.",aud21 split
+Q67,aud32.txt,their full life-cycle data are merged and randomly split into 80% for training and 20% for validation,aud32 inner random split
+Q68,aud32.txt,"The NASA dataset B5, B6, and B18 battery data were employed for model training, while B7 battery data served as the test set.",aud32 split
+Q69,aud36.txt,data from the five cells other than the test cell were randomly shuffled; 80% of the shuffled data were then selected as the training set,aud36 inner random split
+Q70,aud29.txt,we predict the last 60 cycles of each cell while using the preceding cycles and data from the other 3 cells as the training data,aud29 split
+Q71,aud44.txt,"we set the first 200, 400, 600, and 800 cycles as the training sets",aud44 temporal
+Q72,aud17.txt,"we select 50%, 60% and 70% of the entire dataset as the training set",aud17 temporal
+Q73,aud38.txt,the first 60% of cycles are allocated to training and validation sets,aud38 temporal
+Q74,aud43.txt,"50% data set of the battery CELL1 was used as the training set, while the remaining data set served as the testing set",aud43 temporal
+Q75,aud37.txt,training and testing datasets in an 80–20% ratio,aud37 80-20
+Q76,aud60.txt,80% of the data used for model training,aud60 80-20
+Q77,aud26.txt,Different Training and Evaluation splits for the NASA Li-ion batteries,aud26 vary splits
+Q78,aud01.txt,"Either of these datasets can be testing set, and the corresponding other two datasets are used for training.",aud01 cross-condition
+Q79,aud45.txt,we have used 3.0 Ah battery data for training and tested on 3.5 Ah battery,aud45 cross-type
+Q80,aud54.txt,"one battery (Cell 1) is selected as the training dataset, while the others (Cell 2 & 3) serve as the testing dataset",aud54 split
+Q81,aud57.txt,three train-test splitting strategies employed,aud57 sensitivity to splits
+Q82,aud13.txt,"divided into subsets of training (70%), validation (20%) and tests (10%)",aud13 split
+Q83,aud22.txt,defined by the ratio of current to initial capacity,aud22 SOH definition
+Q84,aud21.txt,The training dataset comprises of cycle data of cell 1 and cell 2,aud21 split
+Q85,aud44.txt,Leave-One-Out cross-validation technique for training on a diversified dataset of battery models,aud44 LOO
+Q86,aud18.txt,strict cell-level partitioning,aud18 split
+Q87,aud29.txt,University of Michigan (UofM) battery aging datasets,aud29 data
+Q88,aud57.txt,a smaller training se,aud57 three splits
+Q89,aud31.txt,four types of batteries (75 cells in total),aud31 data
+Q90,aud28.txt,118 cells,aud28 data
+Q91,aud33.txt,the features we extracted,wang2024 features
+Q92,aud42.txt,did not reach their EoL,aud42 excluded cells
+Q93,aud42.txt,training set in each fold consists of data from 7 NMC111 cells or 13 NMC811 cells,aud42 training cells
+Q94,aud32.txt,Cell1–3 serve as training/validation batteries and Cell4 as the test battery,aud32 Oxford split
+Q95,aud30.txt,"across the NASA, Stanford, and HUST datasets",aud30 data
+Q96,aud36.txt,Cell 04 as the test set,aud36 split
+Q97,aud18.txt,"MIT dataset based on lithium iron phosphate (LFP) cells, the CALCE dataset based on lithium cobalt oxide (LCO) cells",aud18 data
+Q98,aud04.txt,the first 60% of the whole life cycles are used for training,aud04 temporal
+Q99,aud04.txt,a model is trained and tested for each HI and for each of the 12 cells,aud04 per cell
+Q100,aud06.txt,In Scenario 2 the LRM is trained using data from all cells except the test cell,aud06 split
+Q101,aud09.txt,separated into training data of 92 cycles and testing data of 40 cycles,aud09 temporal
+Q102,aud10.txt,we left out the last 8 sets of cycles to be used in an out-of-sample setting,aud10 temporal
+Q103,aud12.txt,the first 55% tested data of each battery are regarded as the training datasets and the residual cycle data as testing datasets,aud12 temporal
+Q104,aud19.txt,"For each test cell, the remaining six are used as the training set",aud19 split
+Q105,aud19.txt,report the best-performing result for each case,aud19 best of five seeds
+Q106,aud27.txt,with 50/20/30% proportions for all our experiments,aud27 proportional
+Q107,aud40.txt,"the B0005 battery dataset was used, along with 6 cycles for testing and 144 cycles for learning",aud40 split
+Q108,aud40.txt,"The test data were used when the SOH was 95, 90, 85, 80, 77, and 75",aud40 interleaved test
+Q109,aud41.txt,considering only the first 50 cycles of the battery life,aud41 temporal
+Q110,aud46.txt,the data from 35C02 and 45C01 were selected as the testing set after removing the results from the first 100 cycles,aud46 split
+Q111,aud46.txt,the training set was established using the data from 35C01 and 45C02,aud46 training cells
+Q112,aud49.txt,A base ANN model was trained using data from 8 cells,aud49 own design
+Q113,aud52.txt,these cells were split into two groups: one for the training process and another for the testing process,aud52 split
+Q114,aud52.txt,even when they were under identical environmental conditions as some of the training ones,aud52 same temperatures
+Q115,tju_zenodo_description.txt,Experimental cycling data for three commercial 18650 type batteries,TJU dataset description
+Q116,tju_zenodo_description.txt,The cells are named as CY,TJU naming by cycling condition
+Q117,saeb2017.txt,the relationship between the training and the validation set should mimic the relationship between the training set and the dataset expected for the clinical use,Saeb et al. principle
+Q118,saeb2017.txt,record-wise CV often massively overestimates the prediction accuracy of the algorithms,Saeb et al. record-wise
+Q119,kapoor2023.txt,we introduce a detailed taxonomy of eight types of leakage,Kapoor and Narayanan taxonomy
+Q120,kapoor2023.txt,the test set should not contain any data from a date before the training set,Kapoor temporal leakage
+Q121,maher2025_abstract.txt,random train-test splits yielded an R2 of up to 0.9999,Maher and Yerken random split
+Q122,maher2025_abstract.txt,adoption of cell-wise GroupKFold as the standard evaluation protocol,Maher and Yerken recommendation
+Q123,erdogan_readme.txt,inflate the apparent accuracy of state-of-health (SOH) estimators,Erdogan question
+Q124,erdogan_readme.txt,22 split cycles of the same cell between training and test,Erdogan survey within-cell
+Q125,erdogan_readme.txt,28× apparent improvement,Erdogan proxy ladder
+Q126,erdogan_survey_summary.txt,"50 papers (25 NASA/CALCE, 25 MIT/other), OpenAlex top-cited 2019–2025, open-access full text only",Erdogan survey sampling
+Q127,batterylife2025_abstract.txt,inconsistent and limited benchmarks across studies obscure the effectiveness of baselines,BatteryLife motivation
+Q128,hewamalage2022_abstract.txt,"a tutorial-like compilation of the details of one of the most important steps in the overall forecasting process, namely the evaluation",Hewamalage forecast evaluation
+Q129,geslin2023_chemrxiv_abstract.txt,it is critical to consider the use cases when developing prediction models,Geslin use cases
+Q130,geslin2023_chemrxiv_abstract.txt,benchmarking model performance should be carried out between models developed for the same use case,Geslin benchmarking
+Q131,peng2026_energies_abstract.txt,Battery health estimation depends on feature references as well as learners,Peng references
+Q132,peng2026_energies_abstract.txt,no overall online accuracy gain,Peng strict online
+Q133,batacandolo_protocol_readme.txt,Deposited before full-text data extraction,Batacandolo protocol status
+Q134,zhang2019rerf_abstract.txt,may give reliable predictions in extrapolation problems where predictions are required at points out of the domain of the training dataset,RERF abstract extrapolation
+Q135,meyer2021_abstract.txt,areas in the predictor space without support of training data are problematic,Meyer areas without support
+Q136,meyer2021_abstract.txt,"the area, for which the cross-validation error of the model applies",Meyer AOA definition
+Q137,xjtu_data_introduction_en.txt,Simulate the charging and discharging strategy for a Geosynchronous Earth Orbit,XJTU batch 6 description
+Q138,xjtu_data_introduction_en.txt,discharging at a constant current of 0.667C,XJTU batch 6 discharge
+Q139,ma2026_energies_abstract.txt,"Vehicles-Out, Time-Rolling, Domain-Stratified (VTDS)",Ma VTDS
+Q140,ma2026_energies_abstract.txt,"systematically assess models’ generalization limits and engineering deployability across vehicles, time, and operating conditions",Ma VTDS aim
+Q141,ma2026_fulltext.txt,Vehicles-Out enforces validation across distinct,Ma VTDS vehicles-out
+Q142,ma2026_fulltext.txt,performing training and validation within each stratum,Ma domain-stratified
+Q143,ma2026_fulltext.txt,Time-Rolling evaluates performance through rolling (or,Ma time-rolling
+Q144,ma2026_energies_abstract.txt,"Accurate state of health (SOH) assessment is the cornerstone for ensuring the safety, reliability, and lifecycle value prediction of electric vehicles",Ma abstract on the role of SOH assessment
+Q146,gong2025_energies_abstract.txt,"data-driven methods, particularly those utilizing machine learning techniques, offer superior accuracy and adaptability but often require extensive datasets",Gong et al. on data-driven SOH methods
+Q147,gong2025_energies_abstract.txt,a comprehensive comparative analysis is lacking,Gong et al. on the lack of comparative analysis
+Q148,shan2025_fulltext.txt,"optimize charging/discharging strategies, mitigate battery aging, and extend service life",Shan et al. on the use of accurate SOH assessment
+Q149,shan2025_fulltext.txt,early warnings of potential hazards like thermal runaway or capacity plunge,Shan et al. on safety value of SOH prediction
+Q150,gong2025_fulltext.txt,"Accurate estimation for the battery SOH informs the timing for replacing any malfunctioning batteries, keeping the EV battery in optimal operating condition, and decreasing the costs associated with using EVs",Gong et al. on the value of accurate SOH estimation
+Q151,shan2025_fulltext.txt,"Entering the big data era (approximately 2015 to 2020), data-driven techniques flourished",Shan et al. on the rise of data-driven SOH methods
+Q152,gong2025_fulltext.txt,"assesses the model’s generalizability and its ability to make accurate predictions on new, unseen data",Gong et al. on hold-out validation
+Q153,shan2025_fulltext.txt,impose stringent demands on model generalizability,Shan et al. on diverse battery types and brands
+Q154,gong2025_fulltext.txt,data sparsity and imbalance in real-world datasets can exacerbate biases,Gong et al. on real-world dataset bias
+Q155,gong2025_fulltext.txt,SOH estimation with high accuracy at the cell level may not hold at the battery pack level,Gong et al. on cell versus pack level
+Q156,gong2025_fulltext.txt,often represent a snapshot of battery aging status,Gong et al. on training data as a snapshot of aging
+Q157,gong2025_fulltext.txt,can only be applied to certain battery conditions,Gong et al. on applicability of trained models
+Q158,shan2025_fulltext.txt,fundamentally limited by the completeness of training data,Shan et al. on extrapolation of neural networks
+Q159,gong2025_fulltext.txt,fail to represent real-world EV operation conditions,Gong et al. on laboratory datasets

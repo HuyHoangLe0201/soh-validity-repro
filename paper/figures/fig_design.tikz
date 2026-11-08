@@ -1,0 +1,99 @@
+\begin{tikzpicture}[x=1cm,y=1cm,font=\sffamily\scriptsize,line cap=round,line join=round,
+  chip/.style={rounded corners=2pt,minimum height=0.36cm,inner sep=1.5pt,font=\sffamily\scriptsize,align=center,text depth=0.15ex},
+  tiny/.style={font=\sffamily\scriptsize,text=black!60},
+  arr/.style={-{Triangle[length=4pt,width=5.5pt]},cNavy!45,line width=1pt},
+  rowlab/.style={rotate=90,font=\sffamily\bfseries\scriptsize,text=cNavy!70,anchor=south}]
+\def\cw{2.60}\def\gap{0.38}\def\cwg{2.98}\def\ch{4.10}\def\ox{0.55}
+% shared logic ribbon
+\draw[cNavy!35,line width=0.7pt] (\ox+\cwg+0.05,4.62) -- +(0,-0.12) -- (\ox+5*\cwg+\cw-0.05,4.5) -- +(0,0.12);
+\fill[white] (\ox+3*\cwg-1.6,4.4) rectangle +(4.6,0.5);
+\node[font=\sffamily\scriptsize,text=cNavy!80] at (\ox+3*\cwg+0.7,4.66) {identical test rows; a single evaluation choice varied at a time};
+% stage cards
+\foreach \i/\ttl in {0/Data,1/Partition,2/Features,3/Tuning,4/Models,5/Inference}{
+  \pgfmathsetmacro{\x}{\ox+\i*\cwg}
+  \fill[black!7,rounded corners=4pt] (\x+0.05,-0.05) rectangle +(\cw,\ch);
+  \fill[white,rounded corners=4pt] (\x,0) rectangle +(\cw,\ch);
+  \begin{scope}\clip[rounded corners=4pt] (\x,0) rectangle +(\cw,\ch);\shade[top color=cNavy!96,bottom color=cNavy!78] (\x,\ch-0.68) rectangle +(\cw,0.68);\end{scope}
+  \draw[black!18,rounded corners=4pt,line width=0.5pt] (\x,0) rectangle +(\cw,\ch);
+  \node[circle,fill=white,text=cNavy,inner sep=0pt,minimum size=0.4cm,font=\sffamily\bfseries\scriptsize] at (\x+0.32,\ch-0.34) {\the\numexpr\i+1\relax};
+  \node[font=\sffamily\bfseries\footnotesize,text=white,anchor=west] at (\x+0.65,\ch-0.34) {\ttl};
+}
+\icoData{\ox+\cw-0.26}{\ch-0.18}\icoSplit{\ox+1*\cwg+\cw-0.26}{\ch-0.2}\icoIn{\ox+2*\cwg+\cw-0.26}{\ch-0.15}\icoTune{\ox+3*\cwg+\cw-0.26}{\ch-0.28}\icoMod{\ox+4*\cwg+\cw-0.26}{\ch-0.15}\icoInf{\ox+5*\cwg+\cw-0.26}{\ch-0.15}
+\foreach \i in {0,...,4}{\draw[arr] ({\ox+\i*\cwg+\cw+0.05},{\ch/2-0.3}) -- +({\gap-0.1},0);}
+% 1 data and label
+\pgfmathsetmacro{\dx}{\ox}
+\node[tiny,anchor=west] at (\dx+0.18,3.12) {Datasets};
+\node[chip,fill=black!10,minimum width=1.08cm] at (\dx+0.72,2.78) {NASA};
+\node[chip,fill=cTr!88,text=white,minimum width=1.08cm] at (\dx+1.88,2.78) {MATR};
+\node[chip,fill=cTr!88,text=white,minimum width=1.08cm] at (\dx+0.72,2.34) {HUST};
+\node[chip,fill=cCon!88,text=white,minimum width=1.08cm] at (\dx+1.88,2.34) {XJTU};
+\node[chip,fill=violet!75,text=white,minimum width=1.08cm] at (\dx+0.72,1.90) {TJU};
+\draw[black!12,line width=0.5pt] (\dx+0.14,1.52) -- (\dx+\cw-0.14,1.52);
+\node[tiny,anchor=west] at (\dx+0.18,1.30) {Label reference};
+\node[chip,fill=cFe,minimum width=1.08cm] at (\dx+0.72,0.88) {Nominal};
+\node[chip,fill=cFe,minimum width=1.08cm] at (\dx+1.88,0.88) {Per-cell};
+% 2 split
+\pgfmathsetmacro{\sx}{\ox+\cwg}
+\foreach \q in {1,...,5}{\node[font=\sffamily\bfseries\scriptsize,text=black!75,anchor=west] at (\sx+0.12,{3.0-(\q-1)*0.52-0.22}) {Q\q};}
+\thumb{\sx+0.62}{3.0}{2,1,1,1,2,1,1,2,1,1}{1,1,2,1,1,1,2,1,1,2}{1,2,1,1,2,1,1,1,2,1}
+\thumb{\sx+0.62}{2.48}{1,1,1,1,1,1,1,1,1,1}{1,1,1,1,1,1,1,1,1,1}{1,1,1,1,1,1,2,2,2,2}
+\thumb{\sx+0.62}{1.96}{1,1,1,1,1,1,1,1,1,1}{1,1,1,1,1,1,1,1,1,1}{2,2,2,2,2,2,2,2,2,2}
+\thumb{\sx+0.62}{1.44}{1,1,1,1,1,1,1,1,1,1}{2,2,2,2,2,2,2,2,2,2}{1,1,1,1,1,1,1,1,1,1}
+\thumb{\sx+0.62}{0.92}{1,1,1,1,1,1,2,2,2,2}{1,1,1,1,1,1,2,2,2,2}{1,1,1,1,1,1,2,2,2,2}
+\fill[cTr] (\sx+0.3,0.2) rectangle +(0.13,0.13); \node[tiny,anchor=west] at (\sx+0.48,0.27) {Training}; \fill[cTe] (\sx+1.62,0.2) rectangle +(0.13,0.13); \node[tiny,anchor=west] at (\sx+1.8,0.27) {Test};
+% 3 inputs
+\pgfmathsetmacro{\ix}{\ox+2*\cwg}
+\foreach \k/\lab/\txt in {0/F1/{Charge features},1/F2/{Voltage points},2/F3/{+ Charge capacity}}{
+  \pgfmathsetmacro{\yy}{3.18-\k*1.0}
+  \node[chip,fill=cFe,font=\sffamily\bfseries\scriptsize,minimum width=0.55cm] at (\ix+0.45,\yy-0.2) {\lab};
+  \curve{\ix+0.98}{\yy-0.62}
+  \node[tiny,anchor=west] at (\ix+0.18,\yy-0.78) {\txt};
+}
+\foreach \dx/\dy in {0.15/0.22,0.6/0.33,1.05/0.42}{\fill[cTe] (\ix+0.98+\dx,2.18-0.62+\dy) circle (0.04);}
+\fill[cTe!80] (\ix+2.2,0.62) rectangle +(0.12,0.46);\fill[cTe!45] (\ix+2.36,0.62) rectangle +(0.12,0.32);\node[tiny] at (\ix+2.3,1.22) {$Q$};
+% 4 tuning
+\pgfmathsetmacro{\tx}{\ox+3*\cwg}
+\node[tiny,anchor=west] at (\tx+0.18,3.1) {Default};
+\draw[black!12,line width=0.5pt] (\tx+0.14,2.9) -- (\tx+\cw-0.14,2.9);
+\node[tiny,anchor=west] at (\tx+0.18,2.7) {Nested};
+\foreach \c/\t in {0/1,1/1,2/1,3/1,4/2}{\ifnum\t=2\fill[cTe]\else\fill[cTr]\fi (\tx+0.2+\c*0.2,2.52) rectangle +(0.17,-0.17);}
+\foreach \c/\t in {0/1,1/1,2/3}{\ifnum\t=3\fill[cVal]\else\fill[cTr!60]\fi (\tx+0.2+\c*0.2,2.3) rectangle +(0.17,-0.17);}
+\node[tiny,anchor=west] at (\tx+1.2,2.22) {Validation};
+\draw[black!12,line width=0.5pt] (\tx+0.14,1.84) -- (\tx+\cw-0.14,1.84);
+\node[tiny,anchor=west,text=cBad] at (\tx+0.18,1.64) {On reported folds};
+\foreach \c/\t in {0/1,1/1,2/1,3/1,4/2}{\ifnum\t=2\fill[cTe]\else\fill[cTr]\fi (\tx+0.2+\c*0.2,1.46) rectangle +(0.17,-0.17);}
+\draw[cBad,dashed,line width=0.7pt,-{Triangle[length=3pt,width=3.6pt]}] (\tx+1.12,1.26) .. controls (\tx+1.12,0.78) and (\tx+0.6,0.78) .. (\tx+0.6,1.22);
+\node[tiny,text=cBad,anchor=west] at (\tx+1.3,0.98) {Test folds};
+% 5 models
+\pgfmathsetmacro{\mx}{\ox+4*\cwg}
+\node[tiny,anchor=west] at (\mx+0.18,3.12) {Tabular};
+\foreach \k/\txt in {0/Ridge,1/LightGBM,2/{XGBoost, RF, MLP}}{\node[chip,fill=cTab,minimum width=2.3cm] at (\mx+\cw/2,{2.78-\k*0.42}) {\txt};}
+\node[tiny,anchor=west] at (\mx+0.18,1.52) {Neural networks};
+\foreach \k/\txt in {0/{GRU, Transformer},1/{LSTM, TCN, \ldots},2/{Three seeds each}}{\node[chip,fill=cNet,minimum width=2.3cm] at (\mx+\cw/2,{1.18-\k*0.42}) {\txt};}
+% 6 inference
+\pgfmathsetmacro{\fx}{\ox+5*\cwg}
+\foreach \c/\t in {0/1,1/2,2/3,3/4}{\fill[cTr!55!cTe!\t0] (\fx+0.25+\c*0.2,3.12) rectangle +(0.17,0.17);}
+\draw[arr,cNavy!30] (\fx+0.65,3.05) -- (\fx+0.65,2.85);
+\foreach \c/\t in {0/1,1/1,2/3,3/4}{\fill[cTr!55!cTe!\t0] (\fx+0.25+\c*0.2,2.66) rectangle +(0.17,0.17);}
+\node[tiny,anchor=west] at (\fx+1.3,3.0) {Cluster};\node[tiny,anchor=west] at (\fx+1.3,2.78) {bootstrap};
+\draw[black!12,line width=0.5pt] (\fx+0.14,2.4) -- (\fx+\cw-0.14,2.4);
+\foreach \c/\h in {0/0.12/,1/0.22,2/0.34,3/0.5,4/0.68}{\fill[black!38] (\fx+0.25+\c*0.2,1.62) rectangle +(0.15,\h);}
+\draw[cBad,dashed,line width=0.6pt] (\fx+0.2,1.98) -- (\fx+1.3,1.98);
+\node[tiny,anchor=west] at (\fx+1.5,1.84) {Holm, BH};
+\draw[black!12,line width=0.5pt] (\fx+0.14,1.3) -- (\fx+\cw-0.14,1.3);
+\foreach \c in {0,...,4}{\ifnum\c<4\fill[cTr]\else\draw[cTr,fill=white,line width=0.6pt]\fi (\fx+0.45+\c*0.28,0.82) circle (0.09);}
+\node[tiny] at (\fx+\cw/2,0.38) {$\geq 5$ groups};
+% connectors and threat cards
+\foreach \i in {0,...,5}{\draw[cNavy!25,line width=0.7pt] ({\ox+\i*\cwg+\cw/2},-0.06) -- +(0,-0.4);\fill[cNavy!40] ({\ox+\i*\cwg+\cw/2},-0.46) circle (0.045);}
+\threat{\ox}{-1.55}{\cw}{cCon}{Reference capacity}{Sec.~\ref{sec:res_label}}
+\threat{\ox}{-2.75}{\cw}{cExt}{Laboratory\\data only}{Sec.~\ref{sec:res_field}}
+\threat{\ox+1*\cwg}{-1.55}{\cw}{cInt}{Neighboring\\cycles of one cell}{Sec.~\ref{sec:res_nasa}, \ref{sec:res_protocol}}
+\threat{\ox+2*\cwg}{-1.55}{\cw}{cCon}{Inputs that encode\\capacity}{Sec.~\ref{sec:res_label}}
+\threat{\ox+2*\cwg}{-2.75}{\cw}{cExt}{Choice of\\feature set}{Sec.~\ref{sec:res_curve}}
+\threat{\ox+3*\cwg}{-1.55}{\cw}{cInt}{Selection on\\reported folds}{Sec.~\ref{sec:res_tuning}, \ref{sec:res_selection}}
+\threat{\ox+4*\cwg}{-1.55}{\cw}{cInt}{Extrapolation;\\target-cell rows}{Sec.~\ref{sec:res_temporal}--\ref{sec:res_arch}}
+\threat{\ox+5*\cwg}{-1.55}{\cw}{cInt}{Few units;\\multiplicity}{Sec.~\ref{sec:res_rank}, \ref{sec:res_policy}}
+% row labels and legend
+\node[rowlab] at (0.14,0.3) {Evaluation pipeline};\node[rowlab] at (0.14,-2.45) {Threat to validity};
+\foreach \k/\c/\t in {0/cInt/{Internal validity},1/cCon/{Construct validity},2/cExt/{External validity}}{\fill[\c,rounded corners=1pt] (5.4+\k*3.6,-4.05) rectangle +(0.22,0.22);\node[font=\sffamily\scriptsize,anchor=west,text=black!75] at (5.7+\k*3.6,-3.94) {\t};}
+\end{tikzpicture}

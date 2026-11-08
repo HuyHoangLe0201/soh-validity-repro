@@ -1,0 +1,22 @@
+\usetikzlibrary{arrows.meta,calc,shadings}
+\definecolor{cNavy}{HTML}{1F3A5F}\definecolor{cInt}{HTML}{D9782B}\definecolor{cCon}{HTML}{3F8F5F}\definecolor{cExt}{HTML}{2F66A8}
+\definecolor{cTr}{HTML}{3B6EA5}\definecolor{cTe}{HTML}{E08A3C}\definecolor{cTab}{HTML}{DCEBDF}\definecolor{cNet}{HTML}{E6DEF2}\definecolor{cIn}{HTML}{E4E6F4}\definecolor{cFe}{HTML}{FBEBD6}\definecolor{cVal}{HTML}{9DB9D9}\definecolor{cBad}{HTML}{C0392B}
+% one thumbnail row: \trow{x}{y}{cell width}{values}  (1 training, 2 test)
+\newcommand{\trow}[4]{\foreach \v [count=\c from 0] in {#4}{%
+  \ifnum\v=2 \fill[cTe] ({#1+\c*#3},#2) rectangle +({#3-0.014},-0.135);\else \fill[cTr] ({#1+\c*#3},#2) rectangle +({#3-0.014},-0.135);\fi}}
+\newcommand{\thumb}[5]{\trow{#1}{#2}{0.19}{#3}\trow{#1}{#2-0.143}{0.19}{#4}\trow{#1}{#2-0.286}{0.19}{#5}}
+% charge profile sketch
+\newcommand{\curve}[2]{\draw[black!65,line width=0.6pt] ({#1},{#2}) .. controls ({#1+0.15},{#2+0.25}) and ({#1+0.3},{#2+0.3}) .. ({#1+0.55},{#2+0.34}) .. controls ({#1+0.85},{#2+0.38}) and ({#1+1.0},{#2+0.42}) .. ({#1+1.2},{#2+0.5});}
+% white header icons (about 0.3 cm)
+\newcommand{\icoData}[2]{\draw[white,line width=0.55pt] ({#1},{#2}) ellipse (0.15 and 0.05) ({#1-0.15},{#2}) -- ({#1-0.15},{#2-0.2}) arc (180:360:0.15 and 0.05) -- ({#1+0.15},{#2}); \draw[white,line width=0.55pt] ({#1-0.15},{#2-0.1}) arc (180:360:0.15 and 0.05);}
+\newcommand{\icoSplit}[2]{\foreach \dx/\dy/\cc in {-0.15/0/white,0.02/0/white,-0.15/-0.15/white,0.02/-0.15/cTe}{\fill[\cc] ({#1+\dx},{#2+\dy}) rectangle +(0.13,-0.13);}}
+\newcommand{\icoIn}[2]{\draw[white!80,line width=0.6pt] ({#1-0.16},{#2-0.25}) -- ({#1-0.16},{#2}) ({#1-0.16},{#2-0.25}) -- ({#1+0.16},{#2-0.25}); \draw[cTe!90!white,line width=0.9pt] ({#1-0.12},{#2-0.2}) .. controls ({#1-0.05},{#2-0.06}) .. ({#1+0.15},{#2-0.04});}
+\newcommand{\icoTune}[2]{\foreach \yy/\kx in {0/-0.06,-0.09/0.07,-0.18/-0.02}{\draw[white,line width=0.5pt] ({#1-0.16},{#2+\yy}) -- ({#1+0.16},{#2+\yy}); \fill[white] ({#1+\kx},{#2+\yy}) circle (0.038);}}
+\newcommand{\icoMod}[2]{\draw[white,line width=0.5pt] ({#1-0.13},{#2-0.05}) -- ({#1},{#2-0.22}) -- ({#1+0.13},{#2-0.05}) -- cycle; \foreach \px/\py in {-0.13/-0.05,0/-0.22,0.13/-0.05}{\fill[white] ({#1+\px},{#2+\py}) circle (0.045);}}
+\newcommand{\icoInf}[2]{\foreach \bx/\bh in {-0.14/0.08,-0.05/0.15,0.04/0.23,0.13/0.3}{\fill[white] ({#1+\bx-0.03},{#2-0.28}) rectangle +(0.06,\bh);}}
+% threat card: \threat{x}{y}{width}{colour}{threat text}{section reference}
+\newcommand{\threat}[6]{%
+  \begin{scope}\clip[rounded corners=3pt] ({#1},{#2}) rectangle +({#3},1.05);\fill[white] ({#1},{#2}) rectangle +({#3},1.05);\fill[#4!13] ({#1},{#2}) rectangle +({#3},1.05);\fill[#4] ({#1},{#2}) rectangle +(0.09,1.05);\end{scope}
+  \draw[#4!70,rounded corners=3pt,line width=0.5pt] ({#1},{#2}) rectangle +({#3},1.05);
+  \node[font=\sffamily\scriptsize\bfseries,text=black!80,anchor=north west,align=left,inner sep=0pt] at ({#1+0.2},{#2+0.93}) {#5};
+  \node[font=\sffamily\scriptsize,text=#4!80!black,anchor=south west,inner sep=0pt] at ({#1+0.2},{#2+0.1}) {#6};}
