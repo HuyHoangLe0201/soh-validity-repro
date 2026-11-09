@@ -108,6 +108,7 @@ def main(d7, d20, d26, d29, d31, out, d36=None):
                         rev_all.append({"dataset": ds, "A": a, "B": b, "q1": q1, "delta1": r1.delta, "q2": q2, "delta2": r2.delta})
         print(f"[{ds}] done", flush=True)
     P = pd.concat(pairs_all); R = pd.DataFrame(rev_all)
+    Path(out).mkdir(parents=True, exist_ok=True)
     # one family over all datasets, questions and model pairs (claimable tests only): Holm and BH over the whole set
     cl = P.claimable.values
     P["p_holm_global"] = np.nan; P["p_bh_global"] = np.nan

@@ -21,9 +21,9 @@ class RunnerAll(m26.Runner):
         imp = SimpleImputer(strategy="median").fit(self.X0)
         Xi = imp.transform(self.X0)
         mu, sd = Xi.mean(0), Xi.std(0) + 1e-9
-        X = torch.tensor(((Xi - mu) / sd), dtype=torch.float32)
+        X = torch.tensor(((Xi - mu) / sd), dtype=torch.float32).to(m26.DEV)
         ym, ys = self.y0.mean(), self.y0.std()
-        return X, torch.tensor((self.y0 - ym) / ys, dtype=torch.float32), ym, ys
+        return X, torch.tensor((self.y0 - ym) / ys, dtype=torch.float32).to(m26.DEV), ym, ys
 
 
 rows = []

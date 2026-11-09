@@ -1,0 +1,85 @@
+2026-11-09 08:44:53 start s1_nasa_lobo
+2026-11-09 08:45:06 done  s1_nasa_lobo
+2026-11-09 08:45:06 start s2_nasa_ladder
+2026-11-09 08:45:31 done  s2_nasa_ladder
+2026-11-09 08:45:31 start s3_nasa_gap
+2026-11-09 08:46:54 done  s3_nasa_gap
+2026-11-09 08:46:54 start s4_matr
+2026-11-09 09:32:21 start s4_matr
+2026-11-09 09:51:33 start s4_matr
+2026-11-09 10:50:13 start s4a_matr_table
+2026-11-09 10:50:21 done  s4a_matr_table
+2026-11-09 10:50:21 start f_hust
+2026-11-09 10:53:09 done  f_hust
+2026-11-09 10:53:09 start f_xjtu
+2026-11-09 11:01:04 start f_xjtu
+2026-11-09 11:27:23 start f_xjtu
+2026-11-09 11:59:53 start f_xjtu
+2026-11-09 12:01:09 start f_xjtu
+2026-11-09 14:26:01 start f_xjtu
+2026-11-09 14:33:13 done  f_xjtu
+2026-11-09 14:33:13 start f_tju
+2026-11-09 14:37:41 done  f_tju
+2026-11-09 14:37:41 start w_hust
+2026-11-09 14:40:03 done  w_hust
+2026-11-09 14:40:03 start w_xjtu
+2026-11-09 14:45:22 done  w_xjtu
+2026-11-09 14:45:22 start w_matr
+2026-11-09 14:52:25 done  w_matr
+2026-11-09 14:52:25 start s47
+2026-11-09 14:57:38 done  s47
+2026-11-09 14:57:38 waiting for the tabular results (logs/kaggle_tabular_merged)
+2026-11-09 18:51:49 waiting for the tabular results (logs/kaggle_tabular_merged)
+2026-11-09 18:51:49 start s14
+2026-11-09 18:52:05 done  s14
+2026-11-09 18:52:05 start s60
+2026-11-09 18:52:42 done  s60
+2026-11-09 18:52:42 waiting for the network results (logs/kaggle_merged)
+2026-11-09 18:52:42 start s27
+2026-11-09 18:52:59 done  s27
+2026-11-09 18:52:59 start s30
+2026-11-09 18:53:22 done  s30
+2026-11-09 18:53:22 start s32
+2026-11-09 18:54:09 done  s32
+2026-11-09 18:54:09 start s32b
+2026-11-09 18:54:16 done  s32b
+2026-11-09 18:54:16 start s44
+2026-11-09 18:54:22 done  s44
+2026-11-09 18:54:22 start s50
+2026-11-09 18:54:29 done  s50
+2026-11-09 18:54:29 start s33
+2026-11-09 18:55:05 FAILED s33
+2026-11-09 18:55:05 start s54
+2026-11-09 18:55:08 done  s54
+2026-11-09 18:55:08 start s59
+2026-11-09 18:56:39 FAILED s59
+2026-11-09 18:56:39 start p_tables
+2026-11-09 18:56:47 FAILED p_tables
+2026-11-09 18:56:47 start p_figures
+2026-11-09 18:56:47 FAILED p_figures
+2026-11-09 18:56:47 ALL STEPS FINISHED
+2026-11-09 18:56:55 waiting for the tabular results (logs/kaggle_tabular_merged)
+2026-11-09 18:56:55 waiting for the network results (logs/kaggle_merged)
+2026-11-09 18:56:55 start s33
+2026-11-09 18:57:30 done  s33
+2026-11-09 18:57:30 start s59
+2026-11-09 18:59:02 done  s59
+2026-11-09 18:59:02 start p_tables
+2026-11-09 18:59:05 FAILED p_tables
+2026-11-09 18:59:05 start p_figures
+2026-11-09 18:59:05 FAILED p_figures
+2026-11-09 18:59:05 ALL STEPS FINISHED
+2026-11-09 18:59:35 waiting for the tabular results (logs/kaggle_tabular_merged)
+2026-11-09 18:59:35 start s19b
+2026-11-09 18:59:36 done  s19b
+2026-11-09 18:59:36 waiting for the network results (logs/kaggle_merged)
+2026-11-09 18:59:36 start p_tables
+2026-11-09 18:59:44 done  p_tables
+2026-11-09 18:59:44 start p_figures
+2026-11-09 18:59:49 FAILED p_figures
+2026-11-09 18:59:49 ALL STEPS FINISHED
+2026-11-09 18:59:58 waiting for the tabular results (logs/kaggle_tabular_merged)
+2026-11-09 18:59:58 waiting for the network results (logs/kaggle_merged)
+2026-11-09 18:59:58 start p_figures
+2026-11-09 19:00:13 done  p_figures
+2026-11-09 19:00:13 ALL STEPS FINISHED

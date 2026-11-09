@@ -13,6 +13,8 @@ Code, intermediate results and manuscript build scripts for *Validity Threats in
 Python 3.13 (CPU only). `pip install -r requirements.txt`. The full set of experiments needs about 4 CPU cores and several days of compute; heavy steps should be run one at a time.
 
 ## Reproducing
+The complete pipeline from the raw data is `reproduce_all.sh` (see `REPRODUCTION.md` for the last full run and its comparison with the stored results; `kaggle/` for running the network steps on a GPU).
+
 1. Download the datasets (`DATA.md`).
 2. Build the per-cycle tables with the loaders (for example `python scripts/23_build_tju.py <tju_dir> results/tju_summary.csv.gz`).
 3. Run the steps in numerical order, or the drivers, for example `PYTHON=python bash scripts/run_step7.sh` (logs go to `logs/`). Step 13 additionally needs `XJTU_DIR` pointing to the unpacked XJTU data.

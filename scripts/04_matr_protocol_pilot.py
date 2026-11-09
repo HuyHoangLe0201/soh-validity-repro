@@ -37,11 +37,17 @@ def prepare(df):
     return add_labels(d, nominal=1.1)
 
 
-def main(matr_dir, out_dir, quick=False):
-    from matr_loader import load_matr_summary
-    d = prepare(load_matr_summary(matr_dir))
+def main(matr_dir, out_dir, quick=False, table=None):
+    """table: optional path of the cleaned per-cycle table of a previous run (skips the read of the raw MATR files; used on machines without the raw data)"""
+    import pandas as pd
+    if table:
+        d = pd.read_csv(table)
+    else:
+        from matr_loader import load_matr_summary
+        d = prepare(load_matr_summary(matr_dir))
     Path(out_dir).mkdir(parents=True, exist_ok=True)
-    d.to_csv(Path(out_dir) / "matr_summary_clean.csv.gz", index=False)
+    if not table:
+        d.to_csv(Path(out_dir) / "matr_summary_clean.csv.gz", index=False)
     print(f"cells={d.cell.nunique()} rows={len(d)} batches={d.groupby('batch').cell.nunique().to_dict()}",
           flush=True)
     runs = [("F1", "SOH_rated")]
@@ -51,4 +57,5 @@ def main(matr_dir, out_dir, quick=False):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], quick="--quick" in sys.argv)
+    tab = sys.argv[sys.argv.index("--table") + 1] if "--table" in sys.argv else None
+    main(sys.argv[1], sys.argv[2], quick="--quick" in sys.argv, table=tab)

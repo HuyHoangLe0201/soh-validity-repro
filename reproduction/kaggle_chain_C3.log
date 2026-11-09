@@ -1,0 +1,33 @@
+2026-11-09 11:01:18 start s53_xjtu
+2026-11-09 11:02:17 done  s53_xjtu 59s
+2026-11-09 11:02:17 start s53_tju
+2026-11-09 11:04:47 done  s53_tju 150s
+2026-11-09 11:04:47 start s53_hust
+2026-11-09 11:08:35 done  s53_hust 228s
+2026-11-09 11:08:35 start s53_matr
+2026-11-09 11:12:50 done  s53_matr 255s
+2026-11-09 11:12:50 start s55_tju_cluster
+2026-11-09 11:13:13 done  s55_tju_cluster 22s
+2026-11-09 11:13:13 start s55_tju_ctype
+2026-11-09 11:13:27 done  s55_tju_ctype 14s
+2026-11-09 11:13:27 start s55_tju_temp
+2026-11-09 11:13:41 done  s55_tju_temp 14s
+2026-11-09 11:13:41 start s55_tju_rate
+2026-11-09 11:13:55 done  s55_tju_rate 14s
+2026-11-09 11:13:55 start s55_xjtu_cluster
+2026-11-09 11:14:05 done  s55_xjtu_cluster 10s
+2026-11-09 11:14:05 start s55_hust_cluster
+2026-11-09 11:14:37 done  s55_hust_cluster 32s
+2026-11-09 11:14:37 start s55_matr_cluster
+2026-11-09 11:15:12 done  s55_matr_cluster 35s
+2026-11-09 11:15:12 start s56
+2026-11-09 11:15:20 done  s56 8s
+2026-11-09 11:15:20 start s57_xjtu
+2026-11-09 11:19:00 done  s57_xjtu 220s
+2026-11-09 11:19:00 start s57_tju
+2026-11-09 11:27:02 done  s57_tju 482s
+2026-11-09 11:27:02 start s57_hust
+2026-11-09 11:39:29 done  s57_hust 747s
+2026-11-09 11:39:29 start s57_matr
+2026-11-09 11:49:01 done  s57_matr 572s
+chain C3 finished in 0.80 h

@@ -23,6 +23,7 @@ from rankexp import folds  # noqa: E402
 
 import os
 torch.set_num_threads(int(os.environ.get("TORCH_THREADS", 4)))
+DEV = torch.device(os.environ.get("DEVICE", "cpu"))   # "cuda" on a GPU machine; the default reproduces the CPU runs
 m7 = importlib.import_module("07_rank_experiment")
 L, EPOCHS, BS = 10, 12, 512
 STRIDE = 2  # overridden per dataset size in main: 1 (<30k rows), 2 (<70k), 4 (>=70k)
@@ -53,8 +54,23 @@ class TrfNet(nn.Module):
         return self.out(z[:, -1]).squeeze(-1)
 
 
+def _reinit(net):
+    """Draw the initial weights from the seeded generator.  (Before this was added the nets were built before torch.manual_seed(seed) was called,
+    so their initial weights came from an unseeded generator and a re-run gave a different draw within the seed-to-seed spread.)"""
+    for m in net.modules():
+        if m is net:
+            continue
+        if hasattr(m, "reset_parameters"):
+            m.reset_parameters()
+        elif hasattr(m, "_reset_parameters"):
+            m._reset_parameters()
+
+
 def fit(net, X, W, y, rows, epochs, lr, seed):
     torch.manual_seed(seed)
+    if not getattr(net, "_seeded_init", False):   # first call only: a fine-tuning call continues from the trained weights
+        _reinit(net); net._seeded_init = True
+    net.to(DEV)
     opt = torch.optim.Adam(net.parameters(), lr=lr)
     rng = np.random.default_rng(seed)
     rows = np.asarray(rows)
@@ -62,17 +78,17 @@ def fit(net, X, W, y, rows, epochs, lr, seed):
         net.train()
         perm = rng.permutation(rows)
         for b in range(0, len(perm), BS):
-            ib = perm[b:b + BS]
+            ib = torch.from_numpy(perm[b:b + BS]).to(DEV)
             loss = nn.functional.mse_loss(net(X[W[ib]]), y[ib])
             opt.zero_grad(); loss.backward(); opt.step()
     return net
 
 
 def predict(net, X, W, rows):
-    net.eval(); out = []
+    net.to(DEV); net.eval(); out = []
     with torch.no_grad():
         for b in range(0, len(rows), 4096):
-            out.append(net(X[W[rows[b:b + 4096]]]).numpy())
+            out.append(net(X[W[torch.from_numpy(np.asarray(rows[b:b + 4096])).to(DEV)]]).cpu().numpy())
     return np.concatenate(out) if out else np.array([])
 
 
@@ -99,16 +115,16 @@ class Runner:
             first = np.repeat(starts, np.diff(np.r_[starts, len(d)]))
             jj = np.where(same, j, first)
             W[order, k] = order[jj]
-        self.W = torch.from_numpy(W)
+        self.W = torch.from_numpy(W).to(DEV)
         self.feats = feats
 
     def prep(self, tr):
         imp = SimpleImputer(strategy="median").fit(self.X0[tr])
         Xi = imp.transform(self.X0)
         mu, sd = Xi[tr].mean(0), Xi[tr].std(0) + 1e-9
-        X = torch.tensor(((Xi - mu) / sd), dtype=torch.float32)
+        X = torch.tensor(((Xi - mu) / sd), dtype=torch.float32).to(DEV)
         ym, ys = self.y0[tr].mean(), self.y0[tr].std()
-        y = torch.tensor((self.y0 - ym) / ys, dtype=torch.float32)
+        y = torch.tensor((self.y0 - ym) / ys, dtype=torch.float32).to(DEV)
         return X, y, ym, ys
 
     def train_predict(self, kind, tr, te, seed=0, ft_rows=None):
