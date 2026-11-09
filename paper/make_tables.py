@@ -536,6 +536,131 @@ if (R / "step46/shrinkage_recalibration.csv").exists():
         NUM[f"shr_{x.dataset}_slope"] = f2(x.residual_on_soh_slope); NUM[f"shr_{x.dataset}_base"] = f2(x.rmse_late_base); NUM[f"shr_{x.dataset}_rec"] = f2(x.rmse_late_recalibrated)
     for _, x in pd.read_csv(R / "step46/fade_rate.csv").iterrows():
         NUM[f"fade_{x.dataset}_rho"] = f2(x.spearman_rmse_vs_abs_slope); NUM[f"fade_{x.dataset}_share"] = f"{100 * x.fastest_third_share_of_sse:.0f}"
+# ------------------------------------------------------------------ round 5 (steps 53-60): factorial design, macro-averaged errors, group typology, selection over partitions, calibration of inference
+DSN = {"matr": "MATR", "hust": "HUST", "xjtu": "XJTU", "tju": "TJU"}
+if (R / "step56/factorial_contrasts.csv").exists():
+    fr = pd.read_csv(R / "step56/factorial_rmse.csv"); fc = pd.read_csv(R / "step56/factorial_contrasts.csv"); fu = pd.read_csv(R / "step56/factorial_uncovered.csv")
+    rows = []
+    for ds in ("matr", "hust", "xjtu", "tju"):
+        for m, ml in (("LightGBM", "LightGBM"), ("Ridge", "Ridge"), ("XGBoost", "XGBoost"), ("RandomForest", "Random forest")):
+            g = fr[(fr.dataset == ds) & (fr.model == m)].set_index(["c", "f"]).pooled
+            cc = fc[(fc.dataset == ds) & (fc.model == m) & (fc.scale == "pooled")].set_index("contrast")
+            tot = cc.loc["total"]; sh = cc.loc["share_coverage"]
+            share = f"{sh.estimate:.2f} ({sh.lo:.2f}, {sh.hi:.2f})" if tot.lo > 1.0 else "not defined"
+            rows.append([DSN[ds] if m == "LightGBM" else "", ml, f2(g[(1.0, 0.0)]), f2(g[(0.6, 0.0)]), f2(g[(1.0, 0.6)]), f2(g[(0.6, 0.6)]), f"{tot.estimate:.2f} ({tot.lo:.2f}, {tot.hi:.2f})", share])
+            for k in ("coverage_alone", "target_alone", "coverage_with_target", "target_at_short_pool", "total", "interaction"):
+                NUM[f"fx_{ds}_{m}_{k}"] = f2(cc.loc[k].estimate); NUM[f"fx_{ds}_{m}_{k}_lo"] = f2(cc.loc[k].lo); NUM[f"fx_{ds}_{m}_{k}_hi"] = f2(cc.loc[k].hi)
+            NUM[f"fx_{ds}_{m}_share"] = f2(sh.estimate); NUM[f"fx_{ds}_{m}_share_lo"] = f2(sh.lo); NUM[f"fx_{ds}_{m}_share_hi"] = f2(sh.hi)
+            for cv in (0.6, 0.8, 1.0): NUM[f"fx_{ds}_{m}_c{int(cv * 10)}"] = f2(g[(cv, 0.0)])
+            for k, (cv, ff) in {"A": (1.0, 0.0), "B": (0.6, 0.0), "C": (1.0, 0.6), "D": (0.6, 0.6)}.items(): NUM[f"fx_{ds}_{m}_{k}"] = f2(g[(cv, ff)])
+        for _, u in fu[fu.dataset == ds].iterrows(): NUM[f"fx_{ds}_unc_{u.corner}"] = f"{100 * u.uncovered_share:.0f}"
+    tex_table(pd.DataFrame(rows, columns=["Dataset", "Model", "A", "B", "C", "D", "D$-$A (95\\% CI)", "Coverage share"]), "llrrrrll", T / "factorial.tex")
+    sh_all = fc[(fc.scale == "pooled") & (fc.contrast == "share_coverage") & (fc.model.isin(["LightGBM", "XGBoost", "RandomForest"]))]
+    NUM["fx_share_min"] = f2(sh_all.estimate.min()); NUM["fx_share_max"] = f2(sh_all.estimate.max())
+    ta = fc[(fc.scale == "pooled") & (fc.contrast == "target_alone") & (fc.model.isin(["LightGBM", "XGBoost", "RandomForest"]))]
+    NUM["fx_target_abs_max"] = f2(ta.estimate.abs().max())
+if (R / "step54/macro_rmse.csv").exists():
+    mr_ = pd.read_csv(R / "step54/macro_rmse.csv"); ag = pd.read_csv(R / "step54/macro_agreement.csv"); mc_ = pd.read_csv(R / "step54/macro_contrasts.csv")
+    qn = {"P0": "P0", "P2": "P2", "P3": "P3", "PT": "Temporal"}; rows = []
+    for ds in ("matr", "hust", "xjtu", "tju"):
+        for q in ("P0", "P2", "P3", "PT"):
+            row = [DSN[ds] if q == "P0" else "", qn[q]]
+            for m in ("LightGBM", "Ridge", "GRU"):
+                x = mr_[(mr_.dataset == ds) & (mr_.question == q) & (mr_.model == m)].iloc[0]; row += [f2(x.pooled), f2(x.macro_cell)]
+            a = ag[(ag.dataset == ds) & (ag.question == q)].iloc[0]; row += [f"{a.spearman:.2f}", f"{int(a.pair_flips)}/{int(a.pairs)}"]
+            rows.append(row)
+    tex_table(pd.DataFrame(rows, columns=["Dataset", "Question", "LGBM pooled", "LGBM macro", "Ridge pooled", "Ridge macro", "GRU pooled", "GRU macro", "Spearman", "Pairs flipped"]), "llrrrrrrrr", T / "macro.tex")
+    for ds in ("matr", "hust", "xjtu", "tju"):
+        for m in ("LightGBM", "Ridge"):
+            x = mc_[(mc_.dataset == ds) & (mc_.contrast == "P3/P0 all rows") & (mc_.model == m)].iloc[0]; NUM[f"mac_{ds}_{m}_ratio"] = f"{x.estimate:.1f}"; NUM[f"mac_{ds}_{m}_ratio_lo"] = f"{x.lo:.1f}"; NUM[f"mac_{ds}_{m}_ratio_hi"] = f"{x.hi:.1f}"
+        for m in ("LightGBM", "Ridge", "GRU", "TRF"):
+            x = mc_[(mc_.dataset == ds) & (mc_.contrast == "PT-P3") & (mc_.model == m)]
+            if len(x): x = x.iloc[0]; NUM[f"mac_{ds}_{m}_ptp3"] = f2(x.estimate); NUM[f"mac_{ds}_{m}_ptp3_lo"] = f2(x.lo); NUM[f"mac_{ds}_{m}_ptp3_hi"] = f2(x.hi)
+        for q in ("P0", "P2", "P3", "PT"):
+            for m in ("LightGBM", "Ridge"):
+                x = mr_[(mr_.dataset == ds) & (mr_.question == q) & (mr_.model == m)].iloc[0]; NUM[f"mac_{ds}_{m}_{q}"] = f2(x.macro_cell); NUM[f"mac_{ds}_{m}_{q}_pooled"] = f2(x.pooled)
+        a = ag[ag.dataset == ds]; NUM[f"mac_{ds}_flips"] = int(a.pair_flips.sum()); NUM[f"mac_{ds}_pairs"] = int(a.pairs.sum())
+        x = mr_[(mr_.dataset == ds) & (mr_.question == "P3") & (mr_.model == "LightGBM")].iloc[0]; NUM[f"mac_{ds}_LightGBM_P3_group"] = f2(x.macro_group)
+    NUM["mac_flips"] = int(ag.pair_flips.sum()); NUM["mac_pairs"] = int(ag.pairs.sum())
+    NUM["mac_ptp3_ok"] = int(sum(float(NUM[f"mac_{ds}_LightGBM_ptp3_lo"]) > 0 for ds in ("matr", "hust", "xjtu", "tju")))
+if (R / "step60/group_typology.csv").exists():
+    gt = pd.read_csv(R / "step60/group_typology.csv"); rows = []
+    for (ds, gl), g in gt.groupby(["dataset", "grouping"], sort=False):
+        l = g[g.model == "LightGBM"].iloc[0]; rr = g[g.model == "Ridge"].iloc[0]
+        cells = f"{l.cells_min}" if l.cells_min == l.cells_max else f"{l.cells_min}--{l.cells_max}"
+        rows.append([DSN[ds], gl, l["shift"], int(l.groups), cells, f"{l.dist_ratio:.1f}", f2(l.pooled_P3), f"{l.ratio_P3_P2:.1f}", f2(rr.pooled_P3), f"{rr.ratio_P3_P2:.1f}"])
+    d_ = pd.DataFrame(rows, columns=["Dataset", "Held-out group", "Type of shift", "Groups", "Cells per group", "Distance ratio", "LightGBM RMSE", "LightGBM P3/P2", "Ridge RMSE", "Ridge P3/P2"])
+    d_["Dataset"] = d_["Dataset"].where(d_["Dataset"] != d_["Dataset"].shift(), "")
+    tex_table(d_, "llllrrrrrr", T / "typology.tex")
+    from scipy.stats import spearmanr
+    l = gt[gt.model == "LightGBM"]; NUM["gt_rho_lgb"] = f2(spearmanr(l.dist_ratio, l.ratio_P3_P2)[0]); r_ = gt[gt.model == "Ridge"]; NUM["gt_rho_ridge"] = f2(spearmanr(r_.dist_ratio, r_.ratio_P3_P2)[0])
+    NUM["gt_n"] = int(len(l))
+    NUM["gt_max_ridge_ratio"] = f"{r_.ratio_P3_P2.max():.1f}"
+    for _, x in l.iterrows(): NUM[f"gt_{x.dataset}_{x.grouping.split(' (')[0].replace(' ', '_').replace('-', '_')}_ratio"] = f"{x.ratio_P3_P2:.1f}"; NUM[f"gt_{x.dataset}_{x.grouping.split(' (')[0].replace(' ', '_').replace('-', '_')}_dist"] = f"{x.dist_ratio:.1f}"
+if sorted(Path(R / "step57").glob("*_selection_partitions.csv")):
+    sp = pd.concat([pd.read_csv(f) for f in sorted((R / "step57").glob("*_selection_partitions.csv"))], ignore_index=True)
+    sp["opt"] = 100 * (sp.nested - sp.best_global) / sp.nested; sp["opt_def"] = 100 * (sp.default - sp.best_global) / sp.default; rows = []
+    for ds in ("matr", "hust", "xjtu", "tju"):
+        for m in ("Ridge", "LightGBM", "XGBoost"):
+            x = sp[(sp.dataset == ds) & (sp.model == m)]
+            if len(x):
+                rows.append([DSN[ds] if m == "Ridge" else "", m, int(x.folds.iloc[0]), len(x), f"{x.default.mean():.2f} ({x.default.std():.2f})", f"{x.nested.mean():.2f} ({x.nested.std():.2f})", f"{x.best_global.mean():.2f} ({x.best_global.std():.2f})", f"{x.opt.mean():.0f} ({x.opt.min():.0f}, {x.opt.max():.0f})", f"{int((x.opt > 0).sum())}/{len(x)}"])
+                NUM[f"sp_{ds}_{m}_opt"] = f"{x.opt.mean():.0f}"; NUM[f"sp_{ds}_{m}_min"] = f"{x.opt.min():.0f}"; NUM[f"sp_{ds}_{m}_max"] = f"{x.opt.max():.0f}"; NUM[f"sp_{ds}_{m}_pos"] = f"{int((x.opt > 0).sum())}"; NUM[f"sp_{ds}_{m}_n"] = len(x)
+    tex_table(pd.DataFrame(rows, columns=["Dataset", "Model", "Folds", "Partitions", "Default", "Nested", "Selected on reported folds", "Optimism \\% (range)", "Partitions with optimism"]), "llrrllllr", T / "selection_partitions.tex")
+    NUM["sp_reps"] = int(sp.groupby(["dataset", "model"]).size().max()); NUM["sp_med"] = f"{sp.opt.median():.0f}"; NUM["sp_max"] = f"{sp.opt.max():.0f}"; NUM["sp_pos"] = int((sp.opt > 0).sum()); NUM["sp_n"] = int(len(sp))
+if (R / "step59/calibration_null.csv").exists():
+    ca = pd.read_csv(R / "step59/calibration_null.csv"); g = ca.groupby(["dataset", "question"]).agg(units=("units", "first"), b=("boot_fpr", "mean"), p=("perm_fpr", "mean")).reset_index(); rows = []
+    for ds in ("matr", "hust", "xjtu", "tju"):
+        for q in ("P0", "P2", "P3", "PT"):
+            x = g[(g.dataset == ds) & (g.question == q)]
+            if len(x): x = x.iloc[0]; rows.append([DSN[ds] if q == "P0" else "", qn[q], int(x.units), f"{100 * x.b:.1f}", f"{100 * x.p:.1f}"])
+    tex_table(pd.DataFrame(rows, columns=["Dataset", "Question", "Units", "Bootstrap (\\%)", "Randomization (\\%)"]), "llrrr", T / "calibration.tex")
+    for q in ("P0", "P2", "PT"): NUM[f"cal_{q}_boot_max"] = f"{100 * g[g.question == q].b.max():.0f}"
+    g3 = g[(g.question == "P3") & (g.units >= 5)]; NUM["cal_P3_boot_min"] = f"{100 * g3.b.min():.0f}"; NUM["cal_P3_boot_max"] = f"{100 * g3.b.max():.0f}"; NUM["cal_perm_max"] = f"{100 * g.p.max():.1f}"; NUM["cal_perm_min"] = f"{100 * g.p.min():.1f}"
+    NUM["cal_cell_boot_min"] = f"{100 * g[g.question != 'P3'].b.min():.1f}"; NUM["cal_cell_boot_max"] = f"{100 * g[g.question != 'P3'].b.max():.1f}"
+if (R / "step58/power_groups.csv").exists():
+    pw = pd.read_csv(R / "step58/power_groups.csv"); rows = []
+    for G in (3, 4, 5, 6, 8, 10, 15, 20, 35, 70):
+        row = [G]
+        for u in ("tju", "matr_policy"):
+            x = pw[(pw.units == u) & (pw.G == G)]
+            row += [f"{x.power_perm.mean():.2f}" if len(x) else "--", f"{x.power_boot.mean():.2f}" if len(x) else "--", f"{100 * x.null_fpr_boot.mean():.0f}" if len(x) else "--"]
+        row.append(f"{2.0 ** (1 - G):.3f}")
+        rows.append(row)
+    tex_table(pd.DataFrame(rows, columns=["Groups", "TJU rand.", "TJU boot.", "TJU null (\\%)", "MATR rand.", "MATR boot.", "MATR null (\\%)", "Smallest $p$"]), "rrrrrrrr", T / "power.tex")
+    x = pw[(pw.units == "tju")]
+    for G in (5, 6, 8): NUM[f"pw_tju_{G}"] = f"{x[x.G == G].power_perm.mean():.2f}"
+    NUM["pw_tju_boot6"] = f"{x[x.G == 6].power_boot.mean():.2f}"
+    NUM["pw_null_g3"] = f"{100 * x[x.G == 3].null_fpr_boot.mean():.0f}"; NUM["pw_null_g8"] = f"{100 * x[x.G == 8].null_fpr_boot.mean():.0f}"
+    y_ = pw[pw.units == "matr_policy"]; NUM["pw_matr_null_g70"] = f"{100 * y_[y_.G == 70].null_fpr_boot.mean():.0f}"; NUM["pw_matr_null_g3"] = f"{100 * y_[y_.G == 3].null_fpr_boot.mean():.0f}"
+import math
+for m_ in (1, 6, 91):
+    NUM[f"gmin_{m_}"] = int(math.floor(1 + math.log2(m_ / 0.05))) + 1
+if (R / "step33/model_reversals_main.csv").exists():
+    rm_ = pd.read_csv(R / "step33/model_reversals_main.csv"); NUM["g33_main_rev"] = int(len(rm_))
+    for ds in ("matr", "hust", "xjtu", "tju"): NUM[f"g33_main_rev_{ds}"] = int((rm_.dataset == ds).sum())
+    NUM["g33_main_rev_p3"] = int(((rm_.q1 == "P3") | (rm_.q2 == "P3")).sum())
+if (R / "step54/macro_agreement.csv").exists():
+    _ag = pd.read_csv(R / "step54/macro_agreement.csv"); NUM["mac_pct"] = f"{100 * _ag.pair_flips.sum() / _ag.pairs.sum():.0f}"
+    _m = _ag.loc[_ag.spearman.idxmin()]; NUM["mac_rho_min"] = f"{_m.spearman:.2f}"; NUM["mac_rho_min_where"] = f"{DSN[_m.dataset]} under {qn[_m.question]}"
+    NUM["mac_rho_med"] = f"{_ag.spearman.median():.2f}"; NUM["mac_flips_max"] = f"{int(_ag.pair_flips.max())}"
+    _m2 = _ag[_ag.question != "PT"].sort_values("spearman").iloc[1]; NUM["mac_rho_second"] = f"{_m2.spearman:.2f}"; NUM["mac_rho_second_where"] = f"{DSN[_m2.dataset]} under {qn[_m2.question]}"
+if (R / "step33/model_pairs.csv").exists() and "p_holm_global" in pd.read_csv(R / "step33/model_pairs.csv", nrows=1).columns:
+    _p = pd.read_csv(R / "step33/model_pairs.csv"); _p = _p[_p.claimable]
+    NUM["gl_tests"] = int(len(_p)); NUM["gl_holm"] = int((_p.p_holm_global < .05).sum()); NUM["gl_bh"] = int((_p.p_bh_global < .05).sum()); NUM["gl_rev"] = int(len(pd.read_csv(R / "step33/model_reversals_global.csv")))
+    NUM["fam_bh"] = int((_p.p_bh < .05).sum())
+if (R / "step61/temporal_proportions.csv").exists():
+    tp = pd.read_csv(R / "step61/temporal_proportions.csv"); rows = []
+    for ds in ("matr", "hust", "xjtu", "tju"):
+        for s in (0.4, 0.5, 0.6, 0.7, 0.8):
+            a = tp[(tp.dataset == ds) & (tp.share == s) & (tp.model == "LightGBM")]; b = tp[(tp.dataset == ds) & (tp.share == s) & (tp.model == "Ridge")]
+            if len(a) and len(b):
+                a, b = a.iloc[0], b.iloc[0]; rows.append([DSN[ds] if s == 0.4 else "", f"{int(100 * s)}", f2(a.PT), f2(a.P3), f2(a.P2), f2(b.PT), f2(b.P3), f2(b.P2)])
+    tex_table(pd.DataFrame(rows, columns=["Dataset", "Train share (\\%)", "LGBM PT", "LGBM P3", "LGBM P2", "Ridge PT", "Ridge P3", "Ridge P2"]), "llrrrrrr", T / "tprop.tex")
+    _l = tp[tp.model == "LightGBM"]; NUM["tp_gt"] = int((_l.PT > _l.P3).sum()); NUM["tp_n"] = int(len(_l))
+    NUM["tp_gt_p2"] = int((_l.PT > _l.P2).sum())
+    for ds in ("matr", "hust", "xjtu", "tju"):
+        x = _l[_l.dataset == ds]; NUM[f"tp_{ds}_gt"] = int((x.PT > x.P3).sum()); NUM[f"tp_{ds}_n"] = int(len(x)); NUM[f"tp_{ds}_min_ratio"] = f"{(x.PT / x.P3).min():.1f}"
 NUM["nasa_pub_mean"] = "119"
 NUM["dsg_a"] = f"{float(NUM['hust_lgb_ref_p0']) / float(NUM['hust_lgb_rated_p0']):.1f}"
 NUM["dsg_c"] = f"{100 * (float(NUM['f3x_LightGBM_F3_P3']) / float(NUM['f3x_LightGBM_F1_P3']) - 1):.0f}"

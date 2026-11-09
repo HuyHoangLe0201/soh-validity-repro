@@ -159,7 +159,7 @@ if do("fig_resultmap"):
 # ====================================================================== F5 distance mechanism
 if do("fig_distance"):
     m7 = importlib.import_module("07_rank_experiment"); m10 = importlib.import_module("10_support_analysis")
-    cache = Path(__file__).resolve().parent.parent / "results" / "cache_dist_r.npz"
+    cache = Path("/tmp/dist_r.npz")
     if cache.exists(): Z = dict(np.load(cache))
     else:
         Z = {}
@@ -224,7 +224,7 @@ if do("fig_extrap"):
 if do("fig_offset"):
     import lightgbm as lgb
     from rankexp import DEFAULTS
-    m7 = importlib.import_module("07_rank_experiment"); cache = Path(__file__).resolve().parent.parent / "results" / "cache_offset_res.npz"
+    m7 = importlib.import_module("07_rank_experiment"); cache = Path("/tmp/offset_res.npz")
     if cache.exists(): Z = np.load(cache, allow_pickle=True); RES = {k: Z[k].item() for k in Z.files}
     else:
         RES = {}
@@ -310,3 +310,48 @@ if do("fig_ranking"):
     ax.set_xlim(5, 6000); ax.set_title("Family of 14 models", fontsize=6.8, loc="left")
     for a, l in zip(axs, "ABC"): plabel(a, l, -0.14 if l != "C" else -0.62, 1.02)
     save(fig, "fig_ranking")
+
+# ====================================================================== F10 factorial separation of coverage and target-cell information (step 53/56)
+if do("fig_factorial"):
+    fr = pd.read_csv(R / "step56/factorial_rmse.csv")
+    fig, axs = plt.subplots(1, 4, figsize=(7.2, 2.15), gridspec_kw={"wspace": 0.42})
+    for ax, (ds, nm) in zip(axs, DS):
+        for m, ls, mk in (("LightGBM", "-", "o"), ("Ridge", "--", "s")):
+            for f_, col, lab in ((0.0, BLUE, "target cell absent"), (0.6, ORANGE, "first 60 % of target cell added")):
+                x = fr[(fr.dataset == ds) & (fr.model == m) & (fr.f == f_)].sort_values("c")
+                ax.plot(x.c * 100, x.pooled, ls, color=col, marker=mk, ms=3, lw=1.0, label=f"{m}, {lab}")
+        ax.set_title(nm, fontsize=7); ax.set_xticks([60, 80, 100]); ax.set_xlabel("Other cells: life used (%)")
+        ax.spines[["top", "right"]].set_visible(False); ax.grid(alpha=0.2, lw=0.4)
+        if ds == "matr": ax.set_ylabel("RMSE on last 40 % of cell (% SOH)")
+        g = fr[(fr.dataset == ds) & (fr.model == "LightGBM")].set_index(["c", "f"]).pooled
+        ax.annotate("A, C", (100, g[(1.0, 0.0)]), xytext=(-2, 6), textcoords="offset points", fontsize=6, ha="right", fontweight="bold")
+        ax.annotate("B, D", (60, g[(0.6, 0.0)]), xytext=(4, 6), textcoords="offset points", fontsize=6, ha="left", fontweight="bold")
+    h, l = axs[0].get_legend_handles_labels(); fig.legend(h, l, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, -0.24), fontsize=6)
+    for a, s in zip(axs, "abcd"): plabel(a, s, -0.02, 1.0)
+    save(fig, "fig_factorial")
+
+# ====================================================================== F11 shift magnitude versus error penalty of held-out groups (step 60)
+if do("fig_typology"):
+    gt = pd.read_csv(R / "step60/group_typology.csv"); col = {"matr": BLUE, "hust": GREEN, "xjtu": ORANGE, "tju": PURPLE}; mk = {"matr": "o", "hust": "s", "xjtu": "^", "tju": "D"}
+    short = {"batch (3)": "batch", "C-rate bin (5)": "rate bin", "charging policy (70)": "policy", "input-space cluster (5)": "cluster", "identifier group (10)": "identifier", "batch (6)": "batch",
+             "type x condition (11)": "type$\\times$cond.", "cell type (3)": "type", "temperature (3)": "temp.", "charging rate (3)": "rate"}
+    fig, axs = plt.subplots(1, 2, figsize=(7.2, 2.7), gridspec_kw={"wspace": 0.28})
+    for ax, m in zip(axs, ("LightGBM", "Ridge")):
+        x = gt[gt.model == m]
+        for ds, nm in DS:
+            y_ = x[x.dataset == ds]; ax.scatter(y_.dist_ratio, y_.ratio_P3_P2, color=col[ds], marker=mk[ds], s=18, label=nm, zorder=3, lw=0.3, edgecolor="white")
+            for _, r in y_.iterrows():
+                lab, off = short[r.grouping], (3, 2)
+                if r.grouping == "charging policy (70)": continue
+                if r.grouping == "C-rate bin (5)": lab, off = "rate bin, policy", (4, -8)
+                if ds == "matr" and r.grouping.startswith("input"): off = (4, -8)
+                if ds == "hust" and r.grouping.startswith("ident"): off = (3, 6)
+                ax.annotate(lab, (r.dist_ratio, r.ratio_P3_P2), xytext=off, textcoords="offset points", fontsize=5)
+        ax.axhline(1, color="#888", lw=0.5, ls=":"); ax.axvline(1, color="#888", lw=0.5, ls=":")
+        ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlabel("Distance of held-out rows relative to P2 (ratio)"); ax.set_ylabel("RMSE of held-out group / RMSE of P2")
+        ax.set_title(f"{m} (Spearman {NUM['gt_rho_lgb'] if m == 'LightGBM' else NUM['gt_rho_ridge']})", fontsize=7)
+        ax.spines[["top", "right"]].set_visible(False); ax.grid(alpha=0.2, lw=0.4, which="both")
+        ax.xaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%g")); ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%g"))
+    axs[0].legend(frameon=False, loc="upper left", fontsize=6, ncol=2)
+    plabel(axs[0], "a", -0.16, 1.03); plabel(axs[1], "b", -0.16, 1.03)
+    save(fig, "fig_typology")

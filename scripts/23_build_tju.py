@@ -1,4 +1,4 @@
-"""Step 23 - build per-cycle TJU table: python 23_build_tju.py <dir_with_TJU_csv_folders> results/tju_summary.csv.gz"""
+"""Step 23 - build per-cycle TJU table: python 23_build_tju.py /tmp/tju results/tju_summary.csv.gz"""
 import sys
 from pathlib import Path
 

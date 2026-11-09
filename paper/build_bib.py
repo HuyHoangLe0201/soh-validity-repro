@@ -38,6 +38,7 @@ ents = [crossref("severson2019", "10.1038/s41560-019-0356-8"), crossref("ma2022"
         crossref("kaufman2012", "10.1145/2382577.2382579"), crossref("roberts2017", "10.1111/ecog.02881"), crossref("varma2006", "10.1186/1471-2105-7-91"),
         crossref("benjamini1995", "10.1111/j.2517-6161.1995.tb02031.x"), crossref("field2007", "10.1111/j.1467-9868.2007.00593.x"),
         crossref("chen2016", "10.1145/2939672.2939785", "inproc"),
+        crossref("cameron2008", "10.1162/rest.90.3.414"), crossref("ernst2004", "10.1214/088342304000000396"),
         arxiv("zhang2024", "2310.14714"), arxiv("park2026", "2603.21592"), arxiv("zhao2026", "2608.16212"), arxiv("pedregosa2011", "1201.0490"), arxiv("paszke2019", "1912.01703"), arxiv("transformer2023", "2309.10014")]
 # Le & Nguyen: journal volume/pages are not in Crossref; take them from the journal reference printed on the arXiv record
 k, t, f = crossref("le2026", "10.17531/ein/220211"); f.update({"journal": "Eksploatacja i Niezawodno\\'{s}\\'{c} -- Maintenance and Reliability", "volume": "28", "number": "4", "pages": "220211"}); ents.append((k, t, f))

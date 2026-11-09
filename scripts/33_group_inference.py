@@ -12,9 +12,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+from inference import perm_p  # noqa: E402
+
 B = 4000
 rng = np.random.default_rng(33)
 QS = ["P0", "P2", "P3", "PT"]
+MAIN = ["Ridge", "LightGBM", "GRU", "TRF"]
 
 
 def holm(p):
@@ -83,12 +87,16 @@ def main(d7, d20, d26, d29, d31, out, d36=None):
             fam = []
             for a, b in itertools.combinations(models, 2):
                 diff = br[a] - br[b]
-                p = min(1.0, 2 * min((np.sum(diff <= 0) + 1) / (B + 1), (np.sum(diff >= 0) + 1) / (B + 1)))
+                p = perm_p(S[a] - S[b])   # sign-flip randomization test (src/inference.py); bootstrap kept for the interval
+                p_boot = min(1.0, 2 * min((np.sum(diff <= 0) + 1) / (B + 1), (np.sum(diff >= 0) + 1) / (B + 1)))
                 fam.append({"dataset": ds, "question": q, "A": a, "B": b, "delta": pt[a] - pt[b], "lo": np.percentile(diff, 2.5), "hi": np.percentile(diff, 97.5),
-                            "p": p, "units": len(u)})
+                            "p": p, "p_boot": p_boot, "units": len(u)})
             f = pd.DataFrame(fam)
             f["p_holm"], f["p_bh"] = holm(f.p.values), bh(f.p.values)
-            f["claimable"] = len(u) >= 5
+            mm = f.A.isin(MAIN) & f.B.isin(MAIN)          # primary family: the six pairs among the four main models (ridge, LightGBM, GRU, transformer)
+            f["p_holm_main"] = np.nan
+            f.loc[mm, "p_holm_main"] = holm(f.loc[mm, "p"].values)
+            f["claimable"] = len(u) >= 6
             pairs_all.append(f)
             res[q] = f.set_index(["A", "B"])
         # supported sign changes between questions
@@ -100,6 +108,34 @@ def main(d7, d20, d26, d29, d31, out, d36=None):
                         rev_all.append({"dataset": ds, "A": a, "B": b, "q1": q1, "delta1": r1.delta, "q2": q2, "delta2": r2.delta})
         print(f"[{ds}] done", flush=True)
     P = pd.concat(pairs_all); R = pd.DataFrame(rev_all)
+    # one family over all datasets, questions and model pairs (claimable tests only): Holm and BH over the whole set
+    cl = P.claimable.values
+    P["p_holm_global"] = np.nan; P["p_bh_global"] = np.nan
+    P.loc[cl, "p_holm_global"] = holm(P.loc[cl, "p"].values); P.loc[cl, "p_bh_global"] = bh(P.loc[cl, "p"].values)
+    rg = []
+    for ds, g in P[P.claimable].groupby("dataset"):
+        res = {q: x.set_index(["A", "B"]) for q, x in g.groupby("question")}
+        for (a, b) in res["P2"].index:
+            for q1, q2 in itertools.combinations(QS, 2):
+                if q1 in res and q2 in res and (a, b) in res[q1].index and (a, b) in res[q2].index:
+                    r1, r2 = res[q1].loc[(a, b)], res[q2].loc[(a, b)]
+                    if r1.p_holm_global < 0.05 and r2.p_holm_global < 0.05 and r1.delta * r2.delta < 0:
+                        rg.append({"dataset": ds, "A": a, "B": b, "q1": q1, "delta1": r1.delta, "q2": q2, "delta2": r2.delta})
+    pd.DataFrame(rg).to_csv(Path(out) / "model_reversals_global.csv", index=False)
+    print("one global family: tests", int(cl.sum()), "Holm-significant", int((P.p_holm_global < .05).sum()), "BH-significant", int((P.p_bh_global < .05).sum()), "supported sign changes", len(rg))
+    # primary family: sign changes among the four main models with Holm over their six pairs per (dataset, question)
+    rm = []
+    for ds, g in P[P.claimable & P.p_holm_main.notna()].groupby("dataset"):
+        res = {q: x.set_index(["A", "B"]) for q, x in g.groupby("question")}
+        for (a, b) in res["P2"].index:
+            for q1, q2 in itertools.combinations(QS, 2):
+                if q1 in res and q2 in res and (a, b) in res[q1].index and (a, b) in res[q2].index:
+                    r1, r2 = res[q1].loc[(a, b)], res[q2].loc[(a, b)]
+                    if r1.p_holm_main < 0.05 and r2.p_holm_main < 0.05 and r1.delta * r2.delta < 0:
+                        rm.append({"dataset": ds, "A": a, "B": b, "q1": q1, "delta1": r1.delta, "q2": q2, "delta2": r2.delta})
+    pd.DataFrame(rm).to_csv(Path(out) / "model_reversals_main.csv", index=False)
+    print("primary family (six pairs among the four main models): supported sign changes", len(rm))
+    print(pd.DataFrame(rm).round(2).to_string(index=False))
     Path(out).mkdir(parents=True, exist_ok=True)
     P.to_csv(Path(out) / "model_pairs.csv", index=False); R.to_csv(Path(out) / "model_reversals.csv", index=False)
     pd.set_option("display.width", 220)

@@ -5,7 +5,8 @@ H0: RMSE_A = RMSE_B.  Two-sided bootstrap p-value from the paired unit bootstrap
 P0/P2, held-out groups for P3; B = 4000 resamples, p floor = 1/(B+1)).  Holm (FWER) and Benjamini-Hochberg
 (FDR) adjustments are applied within each family.  A reversal for a pair is "supported after correction"
 when the two protocols give opposite signs and BOTH adjusted p-values are < 0.05.  P3 tests with fewer
-than 5 held-out groups are excluded from reversal claims (bootstrap over <5 units is not informative).
+than 6 held-out groups are excluded from reversal claims (the smallest two-sided sign-flip p-value is 2^(1-G), which exceeds 0.05 for G < 6).
+P-values are sign-flip randomization p-values (src/inference.py); the earlier percentile-bootstrap p-values are kept in results/_boot_inference_backup.
 
 Usage: python 11_multiplicity.py <step7_dir> <out_dir>
 """
@@ -15,6 +16,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+from inference import perm_p  # noqa: E402
 
 B = 4000
 RNG = np.random.default_rng(1)
@@ -28,7 +32,7 @@ def boot_p(eA, eB, units):
     point = np.sqrt(a.sum() / n.sum()) - np.sqrt(b.sum() / n.sum())
     idx = RNG.integers(0, k, (B, k))
     bs = np.sqrt(a[idx].sum(1) / n[idx].sum(1)) - np.sqrt(b[idx].sum(1) / n[idx].sum(1))
-    p = 2 * min((np.sum(bs <= 0) + 1) / (B + 1), (np.sum(bs >= 0) + 1) / (B + 1))
+    p = perm_p(a - b)   # exact / Monte-Carlo sign-flip randomization test (src/inference.py); the bootstrap is kept for intervals only
     return point, min(p, 1.0), k
 
 
@@ -92,7 +96,7 @@ def main(dir7, out):
 
     rev = []
     for (ds, rg, A, Bm), g in allp.groupby(["dataset", "regime", "A", "B"]):
-        g = g[(g.protocol != "P3") | (g.units >= 5)].set_index("protocol")
+        g = g[(g.protocol != "P3") | (g.units >= 6)].set_index("protocol")
         for p1, p2 in itertools.combinations(g.index, 2):
             if np.sign(g.loc[p1, "delta"]) * np.sign(g.loc[p2, "delta"]) < 0:
                 rev.append({"dataset": ds, "regime": rg, "A": A, "B": Bm, "p1": p1, "p2": p2,
@@ -103,7 +107,7 @@ def main(dir7, out):
     rv = pd.DataFrame(rev)
     rv.to_csv(out / "multiplicity_reversals.csv", index=False)
     pd.set_option("display.width", 220)
-    print("Sign reversals between two protocols (P3 only if >= 5 groups); survivors by criterion")
+    print("Sign reversals between two protocols (P3 only if >= 6 groups); survivors by criterion")
     print(rv.groupby(["dataset", "regime"])[["raw", "holm", "bh"]].sum().join(
         rv.groupby(["dataset", "regime"]).size().rename("sign_flips")).to_string())
     print("\nSurvivors after Holm:")
