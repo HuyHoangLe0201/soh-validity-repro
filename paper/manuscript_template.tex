@@ -13,6 +13,8 @@
 % loading pgf breaks the PANTONE spot color of the class (title and headings vanish): use an RGB equivalent for the class color accessblue
 \definecolor{accessblue}{RGB}{0,93,148}
 \usetikzlibrary{arrows.meta,calc,shadings}
+% clickable links (url, citations) without coloured boxes
+\usepackage[hidelinks]{hyperref}
 \setcounter{topnumber}{4}\setcounter{totalnumber}{6}\renewcommand{\topfraction}{0.9}\renewcommand{\textfraction}{0.1}\renewcommand{\floatpagefraction}{0.7}
 \newcommand{\fitcol}[1]{\footnotesize\resizebox{\ifdim\width>\columnwidth\columnwidth\else\width\fi}{!}{\input{#1}}}
 \newcommand{\fitwide}[1]{\footnotesize\resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{\input{#1}}}
@@ -711,7 +713,8 @@ The main results are as follows. Forecasting the later life of a cell can be mor
 The appropriate evaluation depends on the intended use. An estimator applied to cells of types and conditions present in the training data can be evaluated with held-out cells (Q3). One intended for new cell types or operating conditions should be evaluated with held-out groups (Q4), with the type of shift and the number of groups stated, since rankings based on fewer than six groups cannot be tested. One intended to forecast the aging of cells in service should be evaluated with a temporal split (Q5). In our data the main threat to such a forecast was the missing coverage of late life in the training pool, not leakage. When early data of the target cell are used (Q2), the result should be compared with a per-cell offset baseline. In all cases, a report should state the question, the held-out unit and its count, whether errors are pooled over cycles or averaged over cells, the reference capacity, the origin of the inputs and the tuning scheme. Field data with independent reference capacities remain necessary to determine how far these laboratory results transfer.
 
 \section*{Data and Code Availability}
-All five datasets are public: the NASA Prognostics Center of Excellence battery data set \cite{saha2007}; the MATR data of \cite{severson2019} (\url{https://data.matr.io/1/}); the HUST data of \cite{ma2022} (Mendeley Data, doi:10.17632/nsc7hnsg4s); the XJTU data of \cite{wang2024} (Zenodo, record 10963339); and the TJU data of \cite{zhu2022} (Zenodo, record 6405084). The scripts, fixed random seeds, extracted per-cycle features and result tables used to generate every table and figure are available at \url{https://github.com/HuyHoangLe0201/soh-validity-repro}, and the stored predictions are distributed as a release archive of that repository. Software versions: Python 3.13, scikit-learn 1.9.1, LightGBM 4.7.0, XGBoost 3.4.1, PyTorch 2.15.0.
+All five datasets are public: the NASA Prognostics Center of Excellence battery data set \cite{saha2007}; the MATR data of \cite{severson2019} (\url{https://data.matr.io/1/}); the HUST data of \cite{ma2022} (Mendeley Data, doi:10.17632/nsc7hnsg4s); the XJTU data of \cite{wang2024} (Zenodo, record 10963339); and the TJU data of \cite{zhu2022} (Zenodo, record 6405084). The scripts, fixed random seeds, extracted per-cycle features and result tables used to generate every table and figure are available in a public GitHub repository, and the stored predictions are distributed as a release archive of that repository. The repository address is
+\begin{center}\small\url{https://github.com/HuyHoangLe0201/soh-validity-repro}\end{center} Software versions: Python 3.13, scikit-learn 1.9.1, LightGBM 4.7.0, XGBoost 3.4.1, PyTorch 2.15.0.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
