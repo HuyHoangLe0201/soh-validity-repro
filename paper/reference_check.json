@@ -128,28 +128,18 @@
   "type": "inproceedings",
   "title": "BatteryML: An Open-source Platform for Machine Learning on Battery Degradation",
   "doi": null,
-  "issues": [
-   "NOTE arXiv lists published version: doi=None journal_ref=International Conference on Learning Representations (ICLR) 2024"
-  ],
-  "status": "arxiv"
- },
- "park2026": {
-  "key": "park2026",
-  "type": "article",
-  "title": "Battery health reporting fails independent validation across manufacturers",
-  "doi": null,
   "issues": [],
-  "status": "arxiv"
+  "status": "manual"
  },
  "zhao2026": {
   "key": "zhao2026",
-  "type": "article",
+  "type": "inproceedings",
   "title": "Quantifying the Gap Between Laboratory Battery Test Patterns and Field Duty Profiles",
-  "doi": null,
+  "doi": "10.1109/ecceeurope67962.2026.11737822",
   "issues": [
-   "AUTHOR#2 family bib=\"trholt\" arxiv=\"tr holt\""
+   "AUTHOR#2 family bib=\"trholt\" crossref=\"tr holt\""
   ],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "pedregosa2011": {
   "key": "pedregosa2011",
@@ -161,19 +151,11 @@
  },
  "paszke2019": {
   "key": "paszke2019",
-  "type": "article",
+  "type": "inproceedings",
   "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
   "doi": null,
   "issues": [],
-  "status": "arxiv"
- },
- "transformer2023": {
-  "key": "transformer2023",
-  "type": "article",
-  "title": "Prognosis of Multivariate Battery State of Performance and Health via Transformers",
-  "doi": null,
-  "issues": [],
-  "status": "arxiv"
+  "status": "manual"
  },
  "le2026": {
   "key": "le2026",
@@ -212,20 +194,18 @@
  "aud20": {
   "key": "aud20",
   "type": "article",
-  "title": "A Self-attention Knowledge Domain Adaptation Network for Commercial Lithium-ion Batteries State-of-health Estimation under Shallow Cycles",
-  "doi": null,
+  "title": "A self-attention knowledge domain adaptation network for commercial lithium-ion batteries state-of-health estimation under shallow cycles",
+  "doi": "10.1016/j.est.2024.111197",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud21": {
   "key": "aud21",
   "type": "article",
   "title": "Overcoming limited battery data challenges: A coupled neural network approach",
-  "doi": null,
-  "issues": [
-   "NOTE arXiv lists published version: doi=10.1002/er.7081 journal_ref=None"
-  ],
-  "status": "arxiv"
+  "doi": "10.1002/er.7081",
+  "issues": [],
+  "status": "crossref"
  },
  "aud22": {
   "key": "aud22",
@@ -239,43 +219,41 @@
   "key": "aud24",
   "type": "article",
   "title": "State of Health Estimation of Batteries Using a Time-Informed Dynamic Sequence-Inverted Transformer",
-  "doi": null,
+  "doi": "10.36001/ijphm.2026.v17i1.4729",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud25": {
   "key": "aud25",
-  "type": "article",
+  "type": "inproceedings",
   "title": "CyFormer: Accurate State-of-Health Prediction of Lithium-Ion Batteries via Cyclic Attention",
-  "doi": null,
+  "doi": "10.1109/ijcnn54540.2023.10191180",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud26": {
   "key": "aud26",
   "type": "article",
-  "title": "SambaMixer: State of Health Prediction of Li-ion Batteries using Mamba State Space Models",
-  "doi": null,
-  "issues": [
-   "NOTE arXiv lists published version: doi=10.1109/ACCESS.2024.3524321 journal_ref=None"
-  ],
-  "status": "arxiv"
+  "title": "SambaMixer: State of Health Prediction of Li-Ion Batteries Using Mamba State Space Models",
+  "doi": "10.1109/access.2024.3524321",
+  "issues": [],
+  "status": "crossref"
  },
  "aud28": {
   "key": "aud28",
   "type": "article",
   "title": "Comprehensive performance comparison among different types of features in data-driven battery state of health estimation",
-  "doi": null,
+  "doi": "10.1016/j.apenergy.2024.123555",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud29": {
   "key": "aud29",
   "type": "article",
   "title": "Transformer-based Capacity Prediction for Lithium-ion Batteries with Data Augmentation",
-  "doi": null,
+  "doi": "10.1016/j.ifacol.2025.01.080",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud30": {
   "key": "aud30",
@@ -296,24 +274,18 @@
  "aud13": {
   "key": "aud13",
   "type": "article",
-  "title": "SOH-KLSTM: A Hybrid Kolmogorov-Arnold Network and LSTM Model for Enhanced Lithium-Ion Battery Health Monitoring",
-  "doi": null,
-  "issues": [
-   "AUTHOR#3 family bib=\"alahmed\" arxiv=\"alahmeda\"",
-   "AUTHOR#4 family bib=\"abdelkader\" arxiv=\"abdelkadera\"",
-   "AUTHOR#5 family bib=\"driss\" arxiv=\"drissa\"",
-   "AUTHOR#6 family bib=\"abdelhadi\" arxiv=\"abdelhadic\"",
-   "AUTHOR#7 family bib=\"koubaa\" arxiv=\"koubaaa\""
-  ],
-  "status": "arxiv"
+  "title": "SOH-KLSTM: A hybrid Kolmogorov-Arnold Network and LSTM model for enhanced Lithium-ion battery Health Monitoring",
+  "doi": "10.1016/j.est.2025.116541",
+  "issues": [],
+  "status": "crossref"
  },
  "aud17": {
   "key": "aud17",
   "type": "article",
-  "title": "Incremental capacity-based multi-feature fusion model for predicting state-of-health of lithium-ion batteries",
-  "doi": null,
+  "title": "Incremental Capacity-Based Multifeature Fusion Model for Predicting State-of-Health of Lithium-Ion Batteries",
+  "doi": "10.1109/tim.2025.3608342",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud31": {
   "key": "aud31",
@@ -442,66 +414,62 @@
  "aud04": {
   "key": "aud04",
   "type": "article",
-  "title": "Driving behavior-guided battery health monitoring for electric vehicles using machine learning",
-  "doi": null,
-  "issues": [
-   "NOTE arXiv lists published version: doi=10.1016/j.apenergy.2024.123122 journal_ref=Applied Energy (2024)"
-  ],
-  "status": "arxiv"
+  "title": "Driving behavior-guided battery health monitoring for electric vehicles using extreme learning machine",
+  "doi": "10.1016/j.apenergy.2024.123122",
+  "issues": [],
+  "status": "crossref"
  },
  "aud06": {
   "key": "aud06",
   "type": "article",
   "title": "Domain knowledge-guided machine learning framework for state of health estimation in Lithium-ion batteries",
-  "doi": null,
-  "issues": [],
-  "status": "arxiv"
+  "doi": "10.1038/s44172-024-00304-2",
+  "issues": [
+   "ARTICLE-NO bib=1 crossref=168"
+  ],
+  "status": "crossref"
  },
  "aud09": {
   "key": "aud09",
-  "type": "article",
+  "type": "inproceedings",
   "title": "Lithium-ion Battery State of Health Estimation based on Cycle Synchronization using Dynamic Time Warping",
-  "doi": null,
+  "doi": "10.1109/iecon48115.2021.9589504",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud10": {
   "key": "aud10",
   "type": "article",
-  "title": "Learning battery model parameter dynamics from data with recursive Gaussian process regression",
-  "doi": null,
+  "title": "Learning Battery Model Parameter Dynamics From Data With Recursive Gaussian Process Regression",
+  "doi": "10.1115/1.4067771",
   "issues": [
-   "NOTE arXiv lists published version: doi=10.1115/1.4067771 journal_ref=None"
+   "ARTICLE-NO bib=3 crossref=031010"
   ],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud12": {
   "key": "aud12",
   "type": "article",
-  "title": "State of health estimation for lithium-ion battery by combining incremental capacity analysis with Gaussian process regression",
-  "doi": null,
+  "title": "State of health estimation for Li-Ion battery using incremental capacity analysis and Gaussian process regression",
+  "doi": "10.1016/j.energy.2019.116467",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "aud19": {
   "key": "aud19",
   "type": "article",
-  "title": "Real-Time Physics-Aware Battery Health Monitoring from Partial Charging Profiles via Physics-Informed Neural Networks",
-  "doi": null,
-  "issues": [
-   "NOTE arXiv lists published version: doi=10.1016/j.etran.2026.100555 journal_ref=eTransportation 28 (2026) 100555"
-  ],
-  "status": "arxiv"
+  "title": "Real-time physics-aware battery health monitoring from partial charging profiles via physics-informed neural networks",
+  "doi": "10.1016/j.etran.2026.100555",
+  "issues": [],
+  "status": "crossref"
  },
  "aud27": {
   "key": "aud27",
-  "type": "article",
+  "type": "inproceedings",
   "title": "Model-Driven Dataset Generation for Data-Driven Battery SOH Models",
-  "doi": null,
-  "issues": [
-   "NOTE arXiv lists published version: doi=10.1109/ISLPED58423.2023.10244587 journal_ref=None"
-  ],
-  "status": "arxiv"
+  "doi": "10.1109/islped58423.2023.10244587",
+  "issues": [],
+  "status": "crossref"
  },
  "aud40": {
   "key": "aud40",
@@ -589,11 +557,11 @@
  },
  "tan2025": {
   "key": "tan2025",
-  "type": "article",
+  "type": "inproceedings",
   "title": "BatteryLife: A Comprehensive Dataset and Benchmark for Battery Life Prediction",
-  "doi": null,
+  "doi": "10.1145/3711896.3737372",
   "issues": [],
-  "status": "arxiv"
+  "status": "crossref"
  },
  "erdogan2026": {
   "key": "erdogan2026",
@@ -619,16 +587,6 @@
   "issues": [],
   "status": "crossref"
  },
- "batacandolo2026": {
-  "key": "batacandolo2026",
-  "type": "misc",
-  "title": "Evaluation design and reporting in machine-learning state-of-health estimation on the NASA lithium-ion battery dataset -- a systematic meta-research review of open-access studies",
-  "doi": "10.5281/zenodo.23359172",
-  "issues": [
-   "Crossref returned nothing for 10.5281/zenodo.23359172"
-  ],
-  "status": "DOI NOT FOUND"
- },
  "meyer2021": {
   "key": "meyer2021",
   "type": "article",
@@ -639,13 +597,11 @@
  },
  "zhang2019rerf": {
   "key": "zhang2019rerf",
-  "type": "article",
+  "type": "inproceedings",
   "title": "Regression-Enhanced Random Forests",
   "doi": null,
-  "issues": [
-   "NOTE arXiv lists published version: doi=None journal_ref=In JSM Proceedings (2017), Section on Statistical Learning and Data Science, Alexandria, VA: American Statistical Association. 636 -- 647"
-  ],
-  "status": "arxiv"
+  "issues": [],
+  "status": "manual"
  },
  "shan2025": {
   "key": "shan2025",
