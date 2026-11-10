@@ -125,8 +125,8 @@ Q125,erdogan_readme.txt,28× apparent improvement,Erdogan proxy ladder
 Q126,erdogan_survey_summary.txt,"50 papers (25 NASA/CALCE, 25 MIT/other), OpenAlex top-cited 2019–2025, open-access full text only",Erdogan survey sampling
 Q127,batterylife2025_abstract.txt,inconsistent and limited benchmarks across studies obscure the effectiveness of baselines,BatteryLife motivation
 Q128,hewamalage2022_abstract.txt,"a tutorial-like compilation of the details of one of the most important steps in the overall forecasting process, namely the evaluation",Hewamalage forecast evaluation
-Q129,geslin2023_chemrxiv_abstract.txt,it is critical to consider the use cases when developing prediction models,Geslin use cases
-Q130,geslin2023_chemrxiv_abstract.txt,benchmarking model performance should be carried out between models developed for the same use case,Geslin benchmarking
+Q129,geslin2023_joule_abstract.txt,it is critical to consider the use cases when developing prediction models,Geslin use cases
+Q130,geslin2023_joule_abstract.txt,benchmarking model performance should be carried out between models developed for the same use case,Geslin benchmarking
 Q131,peng2026_energies_abstract.txt,Battery health estimation depends on feature references as well as learners,Peng references
 Q132,peng2026_energies_abstract.txt,no overall online accuracy gain,Peng strict online
 Q133,batacandolo_protocol_readme.txt,Deposited before full-text data extraction,Batacandolo protocol status
