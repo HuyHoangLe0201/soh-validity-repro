@@ -1,6 +1,7 @@
 """Overview and mechanism figures built from the stored results (paper/figures/).  Usage (venv python, from paper/): python make_figures3.py [names...]
 F1 fig_overview, F2 fig_design, F3 fig_reading, F4 fig_resultmap, F5 fig_distance, F6 fig_extrap, F7 fig_offset, F8 fig_schedules, F9 fig_ranking.
 Schematic parts (partition grids, flow boxes) are marked as such in the captions; every plotted number comes from results/ or tables/."""
+import os
 import json, re, sys, importlib
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -118,7 +119,7 @@ def chevron(ax, x, y):
 # fig_design is drawn in TikZ inside manuscript_template.tex (copy in figures/fig_design.tikz)
 
 # ====================================================================== F3 reading overview
-if do("fig_reading"):
+if do("fig_reading") and os.path.exists("manuscript_template.tex"):   # needs the manuscript text, which is not distributed
     t = open("manuscript_template.tex", encoding="utf-8").read(); i = t.index("\\multicolumn{3}{l}{\\textit{Whole cells held out}}"); j = t.index("\\bottomrule", i)
     parts = re.split(r"\\multicolumn\{3\}\{l\}\{\\textit\{(.*?)\}\} \\\\", t[i:j]); cats, cnt = [], []
     for k in range(1, len(parts), 2):

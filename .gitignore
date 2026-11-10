@@ -4,3 +4,12 @@ catboost_info/
 logs/*.log
 results/cache_*.npz
 data/
+# manuscript text is not distributed
+paper/manuscript*.tex
+paper/references*.bib
+paper/quotes*.csv
+paper/sources/
+paper/*.pdf
+paper/final_submission*
+paper/source_package*
+paper/submission*
