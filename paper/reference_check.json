@@ -634,5 +634,77 @@
   "doi": "10.1214/088342304000000396",
   "issues": [],
   "status": "crossref"
+ },
+ "breiman2001": {
+  "key": "breiman2001",
+  "type": "article",
+  "title": "Random forests",
+  "doi": "10.1023/A:1010933404324",
+  "issues": [],
+  "status": "crossref"
+ },
+ "hoerl1970": {
+  "key": "hoerl1970",
+  "type": "article",
+  "title": "Ridge regression: Biased estimation for nonorthogonal problems",
+  "doi": "10.1080/00401706.1970.10488634",
+  "issues": [],
+  "status": "crossref"
+ },
+ "hochreiter1997": {
+  "key": "hochreiter1997",
+  "type": "article",
+  "title": "Long short-term memory",
+  "doi": "10.1162/neco.1997.9.8.1735",
+  "issues": [],
+  "status": "crossref"
+ },
+ "cho2014": {
+  "key": "cho2014",
+  "type": "inproceedings",
+  "title": "Learning phrase representations using RNN encoder-decoder for statistical machine translation",
+  "doi": "10.3115/v1/D14-1179",
+  "issues": [],
+  "status": "crossref"
+ },
+ "lea2017": {
+  "key": "lea2017",
+  "type": "inproceedings",
+  "title": "Temporal convolutional networks for action segmentation and detection",
+  "doi": "10.1109/CVPR.2017.113",
+  "issues": [],
+  "status": "crossref"
+ },
+ "vaswani2017": {
+  "key": "vaswani2017",
+  "type": "inproceedings",
+  "title": "Attention is all you need",
+  "doi": null,
+  "issues": [],
+  "status": "manual"
+ },
+ "ke2017": {
+  "key": "ke2017",
+  "type": "inproceedings",
+  "title": "LightGBM: A highly efficient gradient boosting decision tree",
+  "doi": null,
+  "issues": [],
+  "status": "manual"
+ },
+ "prokhorenkova2018": {
+  "key": "prokhorenkova2018",
+  "type": "inproceedings",
+  "title": "CatBoost: Unbiased boosting with categorical features",
+  "doi": null,
+  "issues": [],
+  "status": "manual"
+ },
+ "kingma2015": {
+  "key": "kingma2015",
+  "type": "inproceedings",
+  "title": "Adam: A method for stochastic optimization",
+  "doi": null,
+  "issues": [],
+  "status": "manual"
  }
 }
